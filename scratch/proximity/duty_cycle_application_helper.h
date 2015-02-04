@@ -16,9 +16,14 @@ using namespace ns3;
 
 
 class duty_cycle_application_helper {
-
+	private:
+		  std::string m_protocol;
+		  Address m_remote;
+		  RandomVariable m_packetSize;
+		  RandomVariable m_delay;
+		  //ObjectFactory m_factory;
 	public:
-		//duty_cycle_application_helper();
+		duty_cycle_application_helper();
 		duty_cycle_application_helper(std::string protocol);
 		virtual ~duty_cycle_application_helper();
 		ApplicationContainer Install (NodeContainer nodes);

@@ -6,15 +6,16 @@
  */
 
 #include "duty_cycle_application.h"
+ InetSocketAddress beaconBroadcast = InetSocketAddress(Ipv4Address("255.255.255.255"), 80);
+ InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 80);
 
-/*
 duty_cycle_application::duty_cycle_application() {
 	// TODO Auto-generated constructor stub
 
-	beaconBroadcast = InetSocketAddress(Ipv4Address("255.255.255.255"), 80);
-	local = InetSocketAddress (Ipv4Address::GetAny (), 80);
+	//beaconBroadcast = InetSocketAddress(Ipv4Address("255.255.255.255"), 80);
+	//local = InetSocketAddress (Ipv4Address::GetAny (), 80);
 }
-*/
+
 duty_cycle_application::~duty_cycle_application() {
 	// TODO Auto-generated destructor stub
 }
@@ -111,4 +112,12 @@ duty_cycle_application::~duty_cycle_application() {
 	}*/
 //};
 /* namespace ns3 */
-int main(){}
+	void
+	duty_cycle_application::StartApplication(){
+
+	}
+	 void
+	 duty_cycle_application::StopApplication () {
+
+	 }
+//int main(){}
