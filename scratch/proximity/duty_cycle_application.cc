@@ -7,14 +7,14 @@
 
 #include "duty_cycle_application.h"
 
-
+/*
 duty_cycle_application::duty_cycle_application() {
 	// TODO Auto-generated constructor stub
 
 	beaconBroadcast = InetSocketAddress(Ipv4Address("255.255.255.255"), 80);
 	local = InetSocketAddress (Ipv4Address::GetAny (), 80);
 }
-
+*/
 duty_cycle_application::~duty_cycle_application() {
 	// TODO Auto-generated destructor stub
 }

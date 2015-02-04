@@ -13,7 +13,7 @@
 #include "ns3/config-store-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/internet-module.h"
-//#include "ns3/inet-socket-address.h"
+#include "ns3/inet-socket-address.h"
 //#include "ns3/olsr-helper.h"
 //#include "ns3/ipv4-static-routing-helper.h"
 //#include "ns3/ipv4-list-routing-helper.h"
@@ -29,15 +29,18 @@ private:
   //RandomVariable m_size;
   Ptr<Socket> m_socket;
   Ptr<Socket> r_socket;
-  InetSocketAddress beaconBroadcast;
-  InetSocketAddress local;
+  static InetSocketAddress beaconBroadcast;
+  static InetSocketAddress local;
   virtual void StartApplication (void);
   virtual void StopApplication (void);
   void DoGenerate (void);
   //ObjectFactory m_factory;
 
 public:
-  duty_cycle_application();
+  duty_cycle_application() {
+	  beaconBroadcast = InetSocketAddress(Ipv4Address("255.255.255.255"), 80);
+	  local = InetSocketAddress (Ipv4Address::GetAny (), 80);
+  };
   virtual ~duty_cycle_application();
   void SetDelay (RandomVariable delay);
   //void SetSize (RandomVariable size);
