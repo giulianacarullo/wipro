@@ -19,7 +19,7 @@ duty_cycle_application::~duty_cycle_application() {
 
 	void
 	ReceivePacket (Ptr<Socket> socket) {
-		std::cout<<"ueee\n";
+		std::cout<<"Ci entro?\n";
 	    Ptr< Packet > pp = socket->Recv();
 	    unsigned char *data = new unsigned char(pp->GetSize());
 	    pp->CopyData (data, pp->GetSize());
@@ -28,7 +28,7 @@ duty_cycle_application::~duty_cycle_application() {
 	}
 	
 void
-duty_cycle_application::generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
+generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 	              uint32_t pktCount, Time pktInterval, bool repeat)	{
 	  if (pktCount > 0)  {
 		  //Begin packet customization
@@ -48,12 +48,12 @@ duty_cycle_application::generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 		  //End packet customization
 	      //socket->Send (Create<Packet> (pktSize));
 	      socket->Send (p);
-	      Simulator::Schedule (pktInterval, &duty_cycle_application::generate_traffic,
+	      Simulator::Schedule (pktInterval, &generate_traffic,
 	                           socket, pktSize,pktCount-1, pktInterval, repeat);
 	    }
 	  else
 		  if(repeat)
-			  Simulator::Schedule (pktInterval, &duty_cycle_application::generate_traffic,
+			  Simulator::Schedule (pktInterval, &generate_traffic,
 	                     socket, pktSize,pktCount-1, pktInterval, repeat);
 		  else {
 			  socket->Close ();
@@ -62,15 +62,16 @@ duty_cycle_application::generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 
 	void
 	duty_cycle_application::DoGenerate (void)	{
-		/*
+
 		 uint32_t packetSize = 1000; // bytes
-		uint32_t numPackets = 1;
-		double interval = 1.0; // seconds
+		 uint32_t numPackets = 1;
+		 double interval = 1.0; // seconds
 		 Time interPacketInterval = Seconds (interval);
-		Simulator::Schedule (Seconds (10.0), &generate_traffic,
-                     GetNode(), packetSize, numPackets, interPacketInterval, true);
-                     * */
-	 /*
+		 Simulator::Schedule(Seconds(m_delay), &generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, true);
+		//Simulator::Schedule (Seconds (10.0), &generate_traffic,
+        //             m_socket, packetSize, numPackets, interPacketInterval, true);
+
+/*
 	  Simulator::Schedule (Seconds (m_delay.GetValue ()),
 	                &duty_cycle_application::DoGenerate, this);
 	  Ptr<Packet> p = Create<Packet> (1000);
@@ -94,7 +95,9 @@ duty_cycle_application::generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 		TypeId tid = TypeId::LookupByName (socketType);
 		r_socket = Socket::CreateSocket (GetNode(), tid);
 		r_socket->Bind (local);
+		r_socket->Listen();
 		r_socket->SetRecvCallback (MakeCallback (&ReceivePacket));
+
 	}
 	
 	/*
@@ -118,7 +121,12 @@ duty_cycle_application::generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 //};
 void
 duty_cycle_application::StartApplication(){
-	//DoGenerate();
+	DoGenerate();
+}
+
+void
+duty_cycle_application::setDelay(unsigned int val){
+	m_delay = val;
 }
 void
 duty_cycle_application::StopApplication () {

@@ -25,7 +25,7 @@ using namespace ns3;
 class duty_cycle_application: public Application {
 
 private:
-  RandomVariable m_delay;
+  uint32_t m_delay;
   //RandomVariable m_size;
   Ptr<Socket> m_socket;
   Ptr<Socket> r_socket;
@@ -34,8 +34,8 @@ private:
   virtual void StartApplication (void);
   virtual void StopApplication (void);
   void DoGenerate (void);
-  void generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
-	              uint32_t pktCount, Time pktInterval, bool repeat);
+  //void generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
+//	              uint32_t pktCount, Time pktInterval, bool repeat);
   //ObjectFactory m_factory;
 
 public:
@@ -48,6 +48,7 @@ public:
   //void SetSize (RandomVariable size);
   void SetRemote (std::string socketType);
   void set_receive(std::string socketType);
+  void setDelay(unsigned int val);
 
 };
 /* namespace ns3 */

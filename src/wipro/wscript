@@ -10,6 +10,11 @@ def build(bld):
     module = bld.create_ns3_module('wipro', ['core'])
     module.source = [
         'model/wipro.cc',
+        'model/tau.cc',
+        'model/tau_sync.cc',
+        'model/tau_to_sync.cc',
+        'model/trickle_time.cc',
+        'model/SSID_formatter.cc',
         'model/duty_cycle_application.cc',
         'helper/duty_cycle_application_helper.cc',
         'helper/wipro-helper.cc',
@@ -24,6 +29,11 @@ def build(bld):
     headers.module = 'wipro'
     headers.source = [
         'model/wipro.h',
+        'model/tau.h',
+        'model/tau_sync.h',
+        'model/tau_to_sync.h',
+        'model/trickle_time.h',
+        'model/SSID_formatter.h',
         'model/duty_cycle_application.h',
         'helper/duty_cycle_application_helper.h',
         'helper/wipro-helper.h',
