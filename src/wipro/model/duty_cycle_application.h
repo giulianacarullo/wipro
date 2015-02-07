@@ -42,7 +42,11 @@ private:
   	bool firstExecution = true;
   	bool checkRestartRequired();
   	void HandleMessage (Ptr<Socket> socket);
-
+  	void doInback();
+  	//Managing packets
+  	uint32_t packetSize = 1000; // bytes
+  	uint32_t numPackets = 1;
+  	Time interPacketInterval = Seconds (1.0);
   virtual void StartApplication (void);
   virtual void StopApplication (void);
   void DoGenerate (void);

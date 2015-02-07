@@ -63,11 +63,8 @@ generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 	      std::memset(buffer, 0, s.length() + 1);
 	      int offset = 2;
 	      std::memcpy(buffer + offset, s.c_str(), s.length()+1);
-	      //std::cout << (buffer+offset) << '\n';
 		  pktSize = s.length() +2;
-
 		  NS_LOG_UNCOND ("Sending packet whose content is: "<< buffer+offset);
-		  //std::cout << "Sending packet whose content is: "<< buffer+offset<< " \n";
 		  Packet *p = new Packet(buffer+offset, pktSize);
 		  //End packet customization
 	      //socket->Send (Create<Packet> (pktSize));
@@ -87,10 +84,6 @@ generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 	void
 	duty_cycle_application::DoGenerate (void)	{
 
-		 uint32_t packetSize = 1000; // bytes
-		 uint32_t numPackets = 1;
-		 double interval = 1.0; // seconds
-		 Time interPacketInterval = Seconds (interval);
 		 //initial delay is considered to avoid colliding nodes
 		 Simulator::Schedule(Seconds(m_delay), &generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, true);
 		//Simulator::Schedule (Seconds (10.0), &generate_traffic,
@@ -102,6 +95,47 @@ generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 	  Ptr<Packet> p = Create<Packet> (1000);
 	  m_socket->Send (p);*/
 	}
+
+void
+duty_cycle_application::doInback() {
+    	tt = tt.getCurrentTrickleTime();
+    	interval = tt.getIntervalLength();
+    	//managing only-listening period
+
+      //  handler.postDelayed(new Runnable() {
+      //     public void run() {
+         	if(!firstExecution) {
+            		//std::cout << "WifiScanner:wifi firstExecution "<<firstExecution<< std::endl;
+            		//Log.i("WifiScanner", "wifi firstExecution "+firstExecution);
+	           		tt.intervalCompleted();
+	         }
+	         else {
+	         		resultsTimer = new std::timer();
+	          		firstExecution = false;
+	         	}
+	         int onlyListeningTime = tt.getOnlyListeningTime();
+	         int rate = (onlyListeningTime>6000)?6000:onlyListeningTime;
+
+	        // Simulator::Schedule(rate, &setScanning);
+	         /*************************** UNCOMMENT
+	            	resultsTimer.scheduleAtFixedRate(new TimerTask() {
+
+			 }, rate, onlyListeningTime); //min between 6000 and onlyListeningTime
+			*****************/
+	        //Checking if should I broadcast myself or not at this time
+	        tt = tt.getCurrentTrickleTime();
+	        if(tt.shouldIBroadcast()){
+	            //Log.i("WifiScan", "wifi broadcasting SSID "+SSID);
+	            //bs.beaconStuffing(mainWifi, SSID);
+	        	Simulator::ScheduleNow(&generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, false);
+	         }
+			//Log.i("WifiScanner", "Wifi Interval "+interval);
+			tt = tt.getCurrentTrickleTime();
+	        interval = tt.getIntervalLength();
+	        doInback();
+	        }
+	        //}, interval);
+	    //}
 
 	void
 	duty_cycle_application::SetRemote (std::string socketType){
