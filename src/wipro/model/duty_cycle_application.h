@@ -50,6 +50,7 @@ private:
   virtual void StartApplication (void);
   virtual void StopApplication (void);
   void DoGenerate (void);
+  void flipScanning();
   //void generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 //	              uint32_t pktCount, Time pktInterval, bool repeat);
   //ObjectFactory m_factory;

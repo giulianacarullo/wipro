@@ -37,9 +37,13 @@ duty_cycle_application::checkRestartRequired(){
 }
 
 void
+duty_cycle_application::flipScanning(){
+	scanning = ! scanning;
+}
+void
 duty_cycle_application::HandleMessage (Ptr<Socket> socket) {
 	//just to try until complete code is produced... remove the following line
-	scanning = true;
+	//scanning = true;
 	if(scanning){
 	    Ptr< Packet > pp = socket->Recv();
 	    unsigned char *data = new unsigned char(pp->GetSize());
@@ -105,18 +109,18 @@ duty_cycle_application::doInback() {
       //  handler.postDelayed(new Runnable() {
       //     public void run() {
          	if(!firstExecution) {
-            		//std::cout << "WifiScanner:wifi firstExecution "<<firstExecution<< std::endl;
             		//Log.i("WifiScanner", "wifi firstExecution "+firstExecution);
 	           		tt.intervalCompleted();
 	         }
 	         else {
 	         		resultsTimer = new std::timer();
 	          		firstExecution = false;
-	         	}
+	         }
 	         int onlyListeningTime = tt.getOnlyListeningTime();
 	         int rate = (onlyListeningTime>6000)?6000:onlyListeningTime;
 
-	        // Simulator::Schedule(rate, &setScanning);
+	         Simulator::Schedule(Seconds(rate), &flipScanning);
+	         Simulator::Schedule(Seconds(onlyListeningTime), &flipScanning);
 	         /*************************** UNCOMMENT
 	            	resultsTimer.scheduleAtFixedRate(new TimerTask() {
 
@@ -132,9 +136,12 @@ duty_cycle_application::doInback() {
 			//Log.i("WifiScanner", "Wifi Interval "+interval);
 			tt = tt.getCurrentTrickleTime();
 	        interval = tt.getIntervalLength();
-	        doInback();
-	        }
+	       // doInback();//???? not sure
+
 	        //}, interval);
+			//substituting postDelay, interval
+			Simulator::Schedule(Seconds(interval), &doInback);
+		}
 	    //}
 
 	void
