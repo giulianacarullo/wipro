@@ -6,8 +6,8 @@
  */
 
 
-#ifndef TAUSYNC_H_
-#define TAUSYNC_H_
+#ifndef TAU_TO_SYNC_H_
+#define TAU_TO_SYNC_H_
 	/**
 	 * Sync assumption holds
 	 * @author giucar
