@@ -17,7 +17,9 @@
 //#include "ns3/olsr-helper.h"
 //#include "ns3/ipv4-static-routing-helper.h"
 //#include "ns3/ipv4-list-routing-helper.h"
-
+#include "trickle_time.h"
+#include "timer.h"
+#include "wifi_receiver.h"
 
 using namespace ns3;
 
@@ -26,11 +28,21 @@ class duty_cycle_application: public Application {
 
 private:
   uint32_t m_delay;
+  bool scanning;
   //RandomVariable m_size;
   Ptr<Socket> m_socket;
   Ptr<Socket> r_socket;
   InetSocketAddress beaconBroadcast;
   InetSocketAddress local;
+
+    wifi_receiver receiver_wifi;
+  	trickle_time tt;
+  	std::timer resultsTimer;
+  	int interval;
+  	bool firstExecution = true;
+  	bool checkRestartRequired();
+  	void HandleMessage (Ptr<Socket> socket);
+
   virtual void StartApplication (void);
   virtual void StopApplication (void);
   void DoGenerate (void);

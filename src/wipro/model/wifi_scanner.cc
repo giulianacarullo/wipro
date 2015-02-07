@@ -23,7 +23,7 @@ wifi_scanner::~wifi_scanner() {
 
 void
 wifi_scanner::handleMessage() {
-        	 //result should be updated as soon as they are available
+        	//result should be updated as soon as they are available
 			//Log.i("WifiScanner", " Wifi Updating results");
         	//if(mainWifi.isWifiEnabled()==false)
             //    mainWifi.setWifiEnabled(true);
@@ -36,6 +36,7 @@ wifi_scanner::handleMessage() {
 				//resultsTimer.purge();
 				//restarting everything
 				firstExecution = true;
+			//IDEA: add statistics on dropped packets!
         }
 
 	/*

@@ -18,35 +18,15 @@ duty_cycle_application::~duty_cycle_application() {
 }
 //class duty_cycle_application : public Application {
 
-bool
-duty_cycle_application::checkRestartRequired(){
-	//result should be updated as soon as they are available
-	//Log.i("WifiScanner", " Wifi Updating results");
-	//if(mainWifi.isWifiEnabled()==false)
-	//    mainWifi.setWifiEnabled(true);
-	//mainWifi.startScan();
-	//updateResults(receiverWifi.getResults());
-	//if i find a new peer I restart with a more intense
-	//broadcasting
-	if(tt.isNetChanged())
-		resultsTimer.reset();
-	//resultsTimer.purge();
-	//restarting everything
-	firstExecution = true;
-	//IDEA: add statistics on dropped packets!
-}
-
-void
-duty_cycle_application::HandleMessage (Ptr<Socket> socket) {
+	void
+	ReceivePacket (Ptr<Socket> socket) {
 		std::cout<<"Ci entro?\n";
 	    Ptr< Packet > pp = socket->Recv();
 	    unsigned char *data = new unsigned char(pp->GetSize());
 	    pp->CopyData (data, pp->GetSize());
 		std::string s(data, data+pp->GetSize() );
 		NS_LOG_UNCOND ("Received one packet: node "<< socket->GetNode()->GetId() <<" data "  << s <<  " at "<< Simulator::Now ().GetMicroSeconds () << " microseconds");
-
-		checkRestartRequired();
-}
+	}
 	
 void
 generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
@@ -88,7 +68,6 @@ generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 		 uint32_t numPackets = 1;
 		 double interval = 1.0; // seconds
 		 Time interPacketInterval = Seconds (interval);
-		 //initial delay is considered to avoid colliding nodes
 		 Simulator::Schedule(Seconds(m_delay), &generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, true);
 		//Simulator::Schedule (Seconds (10.0), &generate_traffic,
         //             m_socket, packetSize, numPackets, interPacketInterval, true);
@@ -118,7 +97,7 @@ generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 		r_socket = Socket::CreateSocket (GetNode(), tid);
 		r_socket->Bind (local);
 		r_socket->Listen();
-		r_socket->SetRecvCallback (MakeCallback (&HandleMessage));
+		r_socket->SetRecvCallback (MakeCallback (&ReceivePacket));
 
 	}
 	
