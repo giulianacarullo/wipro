@@ -37,7 +37,7 @@ private:
 
     wifi_receiver receiver_wifi;
   	trickle_time tt;
-  	std::timer resultsTimer;
+  	timer resultsTimer;
   	int interval;
   	bool firstExecution = true;
   	bool checkRestartRequired();

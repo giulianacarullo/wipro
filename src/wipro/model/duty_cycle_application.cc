@@ -105,7 +105,7 @@ duty_cycle_application::doInback() {
 	           		tt.intervalCompleted();
 	         }
 	         else {
-	         		resultsTimer = new std::timer();
+	         		resultsTimer = new timer();
 	          		firstExecution = false;
 	         }
 	         int onlyListeningTime = tt.getOnlyListeningTime();

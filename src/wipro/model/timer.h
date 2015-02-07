@@ -8,11 +8,12 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
+#include "ns3/core-module.h"
 #include <iostream>
 //#include <conio>
 #include <time.h>	// class needs this inclusion
 
-namespace std {
+using namespace ns3;
 
 class timer {
 public:
@@ -23,7 +24,7 @@ public:
 	void           reset();
 	bool           isRunning();
 	unsigned long  getTime();
-	unsigned long timer::getTimeInSeconds();
+	unsigned long getTimeInSeconds();
 	bool           isOver(unsigned long seconds);
 private:
 	bool           resetted;
@@ -32,8 +33,6 @@ private:
 	unsigned long  end;
 };
 
-};
 
-} /* namespace std */
 
 #endif /* TIMER_H_ */
