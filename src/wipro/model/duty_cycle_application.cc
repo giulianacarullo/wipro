@@ -38,6 +38,7 @@ duty_cycle_application::checkRestartRequired(){
 
 void
 duty_cycle_application::flipScanning(){
+	std::cout<<"FLIP: "<<scanning <<std::endl;
 	scanning = ! scanning;
 }
 void
@@ -87,20 +88,7 @@ duty_cycle_application::generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 	  }
 }
 
-	void
-	duty_cycle_application::DoGenerate (void)	{
 
-		 //initial delay is considered to avoid colliding nodes
-		 Simulator::Schedule(Seconds(m_delay), &duty_cycle_application::generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, true);
-		//Simulator::Schedule (Seconds (10.0), &generate_traffic,
-        //             m_socket, packetSize, numPackets, interPacketInterval, true);
-
-/*
-	  Simulator::Schedule (Seconds (m_delay.GetValue ()),
-	                &duty_cycle_application::DoGenerate, this);
-	  Ptr<Packet> p = Create<Packet> (1000);
-	  m_socket->Send (p);*/
-	}
 
 void
 duty_cycle_application::doInback() {
@@ -119,23 +107,15 @@ duty_cycle_application::doInback() {
 	          		firstExecution = false;
 	         }
 	         int onlyListeningTime = tt.getOnlyListeningTime();
-	         int rate = (onlyListeningTime>6000)?6000:onlyListeningTime;
+	         int rate = (onlyListeningTime>6000)?6000:onlyListeningTime;//min between 6000 and onlyListeningTime
 
 	         Simulator::Schedule(Seconds(rate), &flipScanning);
 	         Simulator::Schedule(Seconds(onlyListeningTime), &flipScanning);
-	         /*************************** UNCOMMENT
-	            	resultsTimer.scheduleAtFixedRate(new TimerTask() {
-
-			 }, rate, onlyListeningTime); //min between 6000 and onlyListeningTime
-			*****************/
 	        //Checking if should I broadcast myself or not at this time
 	        tt = tt.getCurrentTrickleTime();
 	        if(tt.shouldIBroadcast()){
-	            //Log.i("WifiScan", "wifi broadcasting SSID "+SSID);
-	            //bs.beaconStuffing(mainWifi, SSID);
 	        	Simulator::ScheduleNow(&duty_cycle_application::generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, false);
 	         }
-			//Log.i("WifiScanner", "Wifi Interval "+interval);
 			tt = tt.getCurrentTrickleTime();
 	        interval = tt.getIntervalLength();
 	       // doInback();//???? not sure
@@ -168,28 +148,9 @@ duty_cycle_application::doInback() {
 
 	}
 	
-	/*
-	TypeId
-	GetTypeId (void)
-	{
-	  static TypeId tid = TypeId ("duty_cycle_application")
-	    .SetParent<Application> ()
-	    .AddConstructor<duty_cycle_application> ()
-	    .AddAttribute ("Delay", "The delay between two packets (s)",
-	           RandomVariableValue (ConstantVariable (1.0)),
-	           MakeRandomVariableAccessor (&RandomGenerator::m_delay),
-	           MakeRandomVariableChecker ())
-	    .AddAttribute ("PacketSize", "The size of each packet (bytes)",
-	           RandomVariableValue (ConstantVariable (2000)),
-	           MakeRandomVariableAccessor (&RandomGenerator::m_size),
-	           MakeRandomVariableChecker ())
-	    ;
-	  return tid;
-	}*/
-//};
 void
 duty_cycle_application::StartApplication(){
-	DoGenerate();
+	Simulator::Schedule(Seconds(m_delay), &duty_cycle_application::doInback, this);
 }
 
 void
