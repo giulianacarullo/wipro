@@ -97,49 +97,6 @@ NS_LOG_COMPONENT_DEFINE ("thesis_simulation");
 
 using namespace ns3;
 
-void ReceivePacket (Ptr<Socket> socket) {
-  
-    Ptr< Packet > pp = socket->Recv();
-    unsigned char *data = new unsigned char(pp->GetSize());
-    pp->CopyData (data, pp->GetSize());
-	std::string s(data, data+pp->GetSize() );
-	NS_LOG_UNCOND ("Received one packet: node "<< socket->GetNode()->GetId() <<" data "  << s <<  " at "<< Simulator::Now ().GetMicroSeconds () << " microseconds");
-}
-
-
-static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, 
-                             uint32_t pktCount, Time pktInterval, bool repeat)
-{
-  if (pktCount > 0)  {
-	  //Begin packet customization
-	  std::stringstream ss;//create a stringstream
-	  ss << socket->GetNode()->GetId();//add number to the stream
-	  std::string s = "~" + ss.str(); //eventually check for pktSize
-      uint8_t *buffer = (uint8_t*)std::malloc(s.length() + 1);
-      std::memset(buffer, 0, s.length() + 1);
-      int offset = 2;
-      std::memcpy(buffer + offset, s.c_str(), s.length()+1);
-      //std::cout << (buffer+offset) << '\n';
-	  pktSize = s.length() +2;
-	  
-	  NS_LOG_UNCOND ("Sending packet whose content is: "<< buffer+offset);
-	  //std::cout << "Sending packet whose content is: "<< buffer+offset<< " \n";
-	  Packet *p = new Packet(buffer+offset, pktSize);
-	  //End packet customization
-      //socket->Send (Create<Packet> (pktSize));
-      socket->Send (p);
-      Simulator::Schedule (pktInterval, &GenerateTraffic, 
-                           socket, pktSize,pktCount-1, pktInterval, repeat);
-    }
-  else
-	  if(repeat)
-		  Simulator::Schedule (pktInterval, &GenerateTraffic,
-                     socket, pktSize,pktCount-1, pktInterval, repeat);
-	  else {
-		  socket->Close ();
-	  }
-}
-
 void PrintNodePosition(NodeContainer nodes, uint32_t nodeIndex){
 	Ptr<Node> object = nodes.Get(nodeIndex);
     Ptr<MobilityModel> position = object->GetObject<MobilityModel> ();
@@ -350,8 +307,8 @@ int main (int argc, char *argv[])
   //NS_LOG_UNCOND ("Testing broadcast from node " << sourceNode << " with grid distance " << distance);
 
   apps.Start(Seconds(0));
-  for(int i = 0; i<5; i++)
-	  Simulator::Schedule(Seconds(i), &PrintNodesPosition, c);
+  //for(int i = 0; i<5; i++)
+  //	  Simulator::Schedule(Seconds(i), &PrintNodesPosition, c);
   Simulator::Stop (Seconds (30.0));
   Simulator::Run ();
   Simulator::Destroy ();
