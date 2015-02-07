@@ -38,7 +38,7 @@ duty_cycle_application::checkRestartRequired(){
 
 void
 duty_cycle_application::flipScanning(){
-	std::cout<<"FLIP: "<<scanning <<std::endl;
+	NS_LOG_UNCOND ("FLIP: "<<scanning);
 	scanning = ! scanning;
 }
 void
@@ -70,7 +70,7 @@ duty_cycle_application::generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 	      int offset = 2;
 	      std::memcpy(buffer + offset, s.c_str(), s.length()+1);
 		  pktSize = s.length() +2;
-		  NS_LOG_UNCOND ("Sending packet whose content is: "<< buffer+offset);
+		  NS_LOG_UNCOND ("SSSSSSSSSending packet whose content is: "<< buffer+offset);
 		  Packet *p = new Packet(buffer+offset, pktSize);
 		  //End packet customization
 	      //socket->Send (Create<Packet> (pktSize));
@@ -79,9 +79,11 @@ duty_cycle_application::generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 	                           socket, pktSize,pktCount-1, pktInterval, repeat);
 	    }
 	  else
-		  if(repeat)
+		  if(repeat) {
+			  NS_LOG_UNCOND ("still entering?");
 			  Simulator::Schedule (pktInterval, &duty_cycle_application::generate_traffic,
 	                     socket, pktSize,pktCount-1, pktInterval, repeat);
+		  }
 		  else {
 			  socket->Close ();
 		  }
