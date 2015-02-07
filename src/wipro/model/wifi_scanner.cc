@@ -7,32 +7,22 @@
 
 #include "wifi_scanner.h"
 
-namespace std {
-/*
+
+
 wifi_scanner::wifi_scanner() {
 	// TODO Auto-generated constructor stub
 
-}*/
+}
 
 wifi_scanner::~wifi_scanner() {
 	// TODO Auto-generated destructor stub
 }
-class wifi_scanner {
-
-	private:
-		string SSID = "";
-		//private WifiManager mainWifi;
-		wifi_receiver receiver_wifi;
-		//private BeaconStuffing bs;
-		//private final Handler handler = new Handler();
-		trickle_time tt;
-		timer resultsTimer;
-		int interval;
-		bool firstExecution = true;
 
 
-	public:
-        void handleMessage() {
+
+
+void
+wifi_scanner::handleMessage() {
         	 //result should be updated as soon as they are available
 			//Log.i("WifiScanner", " Wifi Updating results");
         	//if(mainWifi.isWifiEnabled()==false)
@@ -71,9 +61,10 @@ class wifi_scanner {
 
 
 
-    void doInback() {
+void
+wifi_scanner::doInback() {
 
-    	tt = trickle_time::getCurrentTrickleTime();
+    	tt = tt.getCurrentTrickleTime();
     	interval = tt.getIntervalLength();
     	//managing only-listening period
 
@@ -86,7 +77,7 @@ class wifi_scanner {
             		tt.intervalCompleted();
             	}
             	else {
-            		resultsTimer = new timer();
+            		resultsTimer = new std::timer();
             		firstExecution = false;
             	}
                 int onlyListeningTime = tt.getOnlyListeningTime();
@@ -98,14 +89,14 @@ class wifi_scanner {
 				}, rate, onlyListeningTime); //min between 6000 and onlyListeningTime
 				*****************/
                 //Checking if should I broadcast myself or not at this time
-                tt = trickle_time::getCurrentTrickleTime();
+                tt = tt.getCurrentTrickleTime();
                 if(tt.shouldIBroadcast()){
                     //Log.i("WifiScan", "wifi broadcasting SSID "+SSID);
                     //bs.beaconStuffing(mainWifi, SSID);
                 	//send message
                 }
 				//Log.i("WifiScanner", "Wifi Interval "+interval);
-				tt = trickle_time::getCurrentTrickleTime();
+				tt = tt.getCurrentTrickleTime();
                 interval = tt.getIntervalLength();
                 doInback();
             }
@@ -125,7 +116,3 @@ class wifi_scanner {
     }*/
 
 
-
-};
-} /* namespace std */
-int main(){}
