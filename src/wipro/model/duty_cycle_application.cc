@@ -56,8 +56,9 @@ duty_cycle_application::HandleMessage (Ptr<Socket> socket) {
 }
 	
 void
-generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
+duty_cycle_application::generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 	              uint32_t pktCount, Time pktInterval, bool repeat)	{
+	  if(!scanning){
 	  if (pktCount > 0)  {
 		  //Begin packet customization
 		  std::stringstream ss;//create a stringstream
@@ -73,23 +74,24 @@ generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 		  //End packet customization
 	      //socket->Send (Create<Packet> (pktSize));
 	      socket->Send (p);
-	      Simulator::Schedule (pktInterval, &generate_traffic,
+	      Simulator::Schedule (pktInterval, &duty_cycle_application::generate_traffic,
 	                           socket, pktSize,pktCount-1, pktInterval, repeat);
 	    }
 	  else
 		  if(repeat)
-			  Simulator::Schedule (pktInterval, &generate_traffic,
+			  Simulator::Schedule (pktInterval, &duty_cycle_application::generate_traffic,
 	                     socket, pktSize,pktCount-1, pktInterval, repeat);
 		  else {
 			  socket->Close ();
 		  }
+	  }
 }
 
 	void
 	duty_cycle_application::DoGenerate (void)	{
 
 		 //initial delay is considered to avoid colliding nodes
-		 Simulator::Schedule(Seconds(m_delay), &generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, true);
+		 Simulator::Schedule(Seconds(m_delay), &duty_cycle_application::generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, true);
 		//Simulator::Schedule (Seconds (10.0), &generate_traffic,
         //             m_socket, packetSize, numPackets, interPacketInterval, true);
 
@@ -131,7 +133,7 @@ duty_cycle_application::doInback() {
 	        if(tt.shouldIBroadcast()){
 	            //Log.i("WifiScan", "wifi broadcasting SSID "+SSID);
 	            //bs.beaconStuffing(mainWifi, SSID);
-	        	Simulator::ScheduleNow(&generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, false);
+	        	Simulator::ScheduleNow(&duty_cycle_application::generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, false);
 	         }
 			//Log.i("WifiScanner", "Wifi Interval "+interval);
 			tt = tt.getCurrentTrickleTime();

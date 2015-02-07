@@ -66,6 +66,7 @@ public:
   void SetRemote (std::string socketType);
   void set_receive(std::string socketType);
   void setDelay(unsigned int val);
+  void generate_traffic (Ptr<Socket> socket, uint32_t pktSize, uint32_t pktCount, Time pktInterval, bool repeat);
 
 };
 /* namespace ns3 */
