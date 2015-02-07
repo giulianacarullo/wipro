@@ -80,6 +80,7 @@
 #include "ns3/olsr-helper.h"
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/ipv4-list-routing-helper.h"
+#include "ns3/duty_cycle_application_helper.h"
 
 #include <iostream>
 #include <fstream>
@@ -88,7 +89,7 @@
 #include <sstream>
 
 //Custom
-#include "proximity/duty_cycle_application_helper.h"
+//#include "proximity/duty_cycle_application_helper.h"
 //#include "proximity/duty_cycle_application_helper.cpp"
 //#include "proximity/duty_cycle_application_helper.h"
 
@@ -165,10 +166,10 @@ void PrintNodesPosition(NodeContainer nodes){
 int main (int argc, char *argv[])
 {
   std::string phyMode ("DsssRate1Mbps");
-  double distance = 500;  // m my_comment: the distance is the actual distance between each couple of nodes
+  double distance = 50;  // m my_comment: the distance is the actual distance between each couple of nodes
   uint32_t packetSize = 1000; // bytes
   uint32_t numPackets = 1;
-  uint32_t numNodes = 25;  // by default, 5x5
+  uint32_t numNodes = 3;  // by default, 5x5
   uint32_t sinkNode = 0;
   uint32_t sourceNode = 24;
   double interval = 1.0; // seconds
@@ -237,17 +238,46 @@ int main (int argc, char *argv[])
   // started from (0.0,0.0) with 5 (GridWidth) objects per row, 
   // the x interval between each object is *distance* meters 
   // and the y interval between each object is *distance* meters
+  mobility.SetPositionAllocator ("ns3::RandomDiscPositionAllocator",
+                                  "X", StringValue ("100.0"),
+                                  "Y", StringValue ("100.0"),
+                                  "Rho", StringValue ("ns3::UniformRandomVariable[Min=10|Max=10]"));
+  /*mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
+                                   "MinX", DoubleValue (0.0),
+                                   "MinY", DoubleValue (0.0),
+                                   "DeltaX", DoubleValue (distance),
+                                   "DeltaY", DoubleValue (distance),
+                                   "GridWidth", UintegerValue (200),
+                                   "LayoutType", StringValue ("RowFirst"));*/
+   mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
+                              "Mode", StringValue ("Time"),
+                              "Time", StringValue ("2s"),
+                              "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=1]"),
+                              "Bounds", StringValue ("0|200|0|200"));
+  /*
+   *
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                  "MinX", DoubleValue (0.0),
                                  "MinY", DoubleValue (0.0),
                                  "DeltaX", DoubleValue (distance),
                                  "DeltaY", DoubleValue (distance),
-                                 "GridWidth", UintegerValue (5),
-                                 "LayoutType", StringValue ("RowFirst"));
+                                 "GridWidth", UintegerValue (50),
+                                 "LayoutType", StringValue ("RowFirst"));*/
   // each object will be attached a static position.
   // i.e., once set by the "position allocator", the
   // position will never change.
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  //mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  //mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel", "Bounds", RectangleValue(Rectangle(0,5,5,5)));
+
+  //mobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
+  //for (uint32_t i = 0; i<c.GetN(); i++){
+//	  Ptr <ConstantVelocityMobilityModel> cv =c.Get(i)->GetObject<ConstantVelocityMobilityModel>();
+//	  cv->SetVelocity(Vector3D(-16.0, 0.0, 0.0));
+
+  //}
+ // mobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel",
+                                  //"Position", Vector3DValue (Vector3D (5, 0, 0)),
+                                  //"Velocity", Vector3DValue (Vector3D (-100, 0, 0)));
   // finalize the setup by attaching to each object
   // in the input array a position and initializing
   // this position with the calculated coordinates.
@@ -315,14 +345,17 @@ int main (int argc, char *argv[])
 
   //duty_cycle_application_helper app =
   duty_cycle_application_helper app= duty_cycle_application_helper ("ns3::UdpSocketFactory");
-  app.Install(c);
-
+ ApplicationContainer apps = app.Install(c);
   // Output what we are doing
-  NS_LOG_UNCOND ("Testing broadcast from node " << sourceNode << " with grid distance " << distance);
+  //NS_LOG_UNCOND ("Testing broadcast from node " << sourceNode << " with grid distance " << distance);
 
-  Simulator::Stop (Seconds (32.0));
+  apps.Start(Seconds(0));
+  for(int i = 0; i<5; i++)
+	  Simulator::Schedule(Seconds(i), &PrintNodesPosition, c);
+  Simulator::Stop (Seconds (30.0));
   Simulator::Run ();
   Simulator::Destroy ();
+
 
   return 0;
 }
