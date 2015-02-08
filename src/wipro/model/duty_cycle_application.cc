@@ -45,15 +45,15 @@ duty_cycle_application::flipScanning(){
 	scanning = ! scanning;
 }
 void
-duty_cycle_application::HandleMessage (Ptr<Socket> socket) {
+duty_cycle_application::HandleMessage () {
 	//just to try until complete code is produced... remove the following line
 	//scanning = true;
 	if(scanning){
-	    Ptr< Packet > pp = socket->Recv();
+	    Ptr< Packet > pp = r_socket->Recv();
 	    unsigned char *data = new unsigned char(pp->GetSize());
 	    pp->CopyData (data, pp->GetSize());
 		std::string s(data, data+pp->GetSize() );
-		NS_LOG_UNCOND ("Received one packet: node "<< socket->GetNode()->GetId() <<" data "  << s <<  " at "<< Simulator::Now ().GetMicroSeconds () << " microseconds");
+		NS_LOG_UNCOND ("Received one packet: node "<< r_socket->GetNode()->GetId() <<" data "  << s <<  " at "<< Simulator::Now ().GetMicroSeconds () << " microseconds");
 		checkRestartRequired();
 	}
 
@@ -149,7 +149,7 @@ duty_cycle_application::doInback() {
 		r_socket = Socket::CreateSocket (GetNode(), tid);
 		r_socket->Bind (local);
 		r_socket->Listen();
-		r_socket->SetRecvCallback (MakeCallback (&duty_cycle_application::HandleMessage,this));
+		//r_socket->SetRecvCallback (MakeCallback (&duty_cycle_application::HandleMessage));
 
 	}
 	

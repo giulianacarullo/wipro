@@ -40,8 +40,7 @@ private:
   	my_timer resultsTimer;
   	int interval;
   	bool firstExecution;
-  	void checkRestartRequired();
-  	void HandleMessage (Ptr<Socket> socket);
+
   	void doInback();
   	//Managing packets
   	uint32_t packetSize;
@@ -53,6 +52,7 @@ private:
   //void generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 //	              uint32_t pktCount, Time pktInterval, bool repeat);
   //ObjectFactory m_factory;
+
 
 public:
   duty_cycle_application();
@@ -66,7 +66,8 @@ public:
   void set_receive(std::string socketType);
   void setDelay(unsigned int val);
   void generate_traffic (Ptr<Socket> socket, uint32_t pktSize, uint32_t pktCount, Time pktInterval, bool repeat);
-
+  void checkRestartRequired();
+    	void HandleMessage ();
 };
 /* namespace ns3 */
 
