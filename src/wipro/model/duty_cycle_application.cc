@@ -156,12 +156,13 @@ duty_cycle_application::doInback() {
 	         }
 	         int onlyListeningTime = tt.getOnlyListeningTime();
 	         int rate = (onlyListeningTime>6000)?6000:onlyListeningTime;//min between 6000 and onlyListeningTime
-
+	         NS_LOG_UNCOND("Rate "<< rate << " only list "<<onlyListeningTime);
 	         Simulator::Schedule(Seconds(rate), &duty_cycle_application::flipScanning,this);
 	         Simulator::Schedule(Seconds(onlyListeningTime), &duty_cycle_application::flipScanning,this);
 	        //Checking if should I broadcast myself or not at this time
 	        tt = tt.getCurrentTrickleTime();
 	        if(tt.shouldIBroadcast()){
+	        	NS_LOG_UNCOND("Should I broadcast!");
 	        	Simulator::ScheduleNow(&generate_traffic, m_socket,this, numPackets, interPacketInterval, false);
 	         }
 			tt = tt.getCurrentTrickleTime();

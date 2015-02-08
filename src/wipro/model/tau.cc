@@ -56,6 +56,7 @@ tau::getTauValue(){
 }
 		
 int tau::getRandomInTheInterval(){
+	NS_LOG_UNCOND("NUOOOOH");
 	return 0;
 }
 
