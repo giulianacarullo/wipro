@@ -65,10 +65,11 @@ public:
   void SetRemote (std::string socketType);
   void set_receive(std::string socketType);
   void setDelay(unsigned int val);
-  void generate_traffic (Ptr<Socket> socket, uint32_t pktCount, Time pktInterval, bool repeat);
+  //void generate_traffic (Ptr<Socket> socket, uint32_t pktCount, Time pktInterval, bool repeat);
   void checkRestartRequired();
   //void gen_traffic (Ptr<Socket> socket);
   void HandleMessage(Ptr<Socket> socket);
+  bool isScanning(){return scanning;};
 };
 /* namespace ns3 */
 

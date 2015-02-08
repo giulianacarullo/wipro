@@ -40,6 +40,43 @@ duty_cycle_application::checkRestartRequired(){
 }
 
 void
+generate_traffic (Ptr<Socket> socket, duty_cycle_application *dca,
+		uint32_t pktCount, Time pktInterval, bool repeat)	{
+
+	  if (pktCount > 0)  {
+		  if(!dca->isScanning()){
+			  //Begin packet custom http://pastebin.com/WHnAgaakmization
+			  std::stringstream ss;//create a stringstream
+			  ss << socket->GetNode()->GetId();//add number to the stream
+			  std::string s = "~" + ss.str(); //eventually check for pktSize
+			  uint8_t *buffer = (uint8_t*)std::malloc(s.length() + 1);
+			  std::memset(buffer, 0, s.length() + 1);
+			  int offset = 2;
+			  std::memcpy(buffer + offset, s.c_str(), s.length()+1);
+			  int pktSize = s.length() +2;
+			  NS_LOG_UNCOND ("Sending packet whose content is: "<< buffer+offset);
+			  Packet *p = new Packet(buffer+offset, pktSize);
+			  //End packet customization
+			  //socket->Send (Create<Packet> (pktSize));
+			  socket->Send (p);
+			  Simulator::Schedule (pktInterval, &generate_traffic,
+								   socket, dca, pktCount-1, pktInterval, repeat);
+		  }
+	    }
+	  else
+		  if(repeat) {
+			  if(!dca->isScanning()){
+				  NS_LOG_UNCOND ("still entering?");
+				  Simulator::Schedule (pktInterval, &generate_traffic,
+	                     socket, dca,pktCount-1, pktInterval, repeat);
+			  }
+		  }
+		  else {
+			  socket->Close ();
+		  }
+
+}
+void
 duty_cycle_application::flipScanning(){
 	NS_LOG_UNCOND ("FLIP: "<<scanning);
 	scanning = ! scanning;
@@ -61,7 +98,7 @@ duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 
 }
 	
-
+/*
 void
 duty_cycle_application::generate_traffic (Ptr<Socket> socket,
 		uint32_t pktCount, Time pktInterval, bool repeat)	{
@@ -95,7 +132,7 @@ duty_cycle_application::generate_traffic (Ptr<Socket> socket,
 			  socket->Close ();
 		  }
 	 // }
-}
+}*/
 
 
 
@@ -125,7 +162,7 @@ duty_cycle_application::doInback() {
 	        //Checking if should I broadcast myself or not at this time
 	        tt = tt.getCurrentTrickleTime();
 	        if(tt.shouldIBroadcast()){
-	        	Simulator::ScheduleNow(&duty_cycle_application::generate_traffic, m_socket,numPackets, interPacketInterval, false);
+	        	Simulator::ScheduleNow(&generate_traffic, m_socket,this, numPackets, interPacketInterval, false);
 	         }
 			tt = tt.getCurrentTrickleTime();
 	        interval = tt.getIntervalLength();
@@ -133,6 +170,7 @@ duty_cycle_application::doInback() {
 
 	        //}, interval);
 			//substituting postDelay, interval
+	        Simulator::ScheduleNow(&generate_traffic, m_socket,this, interval, interPacketInterval, false);
 			Simulator::Schedule(Seconds(interval), &duty_cycle_application::doInback, this);
 		}
 	    //}
@@ -158,7 +196,7 @@ duty_cycle_application::doInback() {
 		r_socket->SetRecvCallback (MakeCallback (&duty_cycle_application::HandleMessage, this));
 
 	}
-	
+
 void
 duty_cycle_application::StartApplication(){
 	Simulator::Schedule(Seconds(m_delay), &duty_cycle_application::doInback, this);
