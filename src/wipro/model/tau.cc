@@ -55,5 +55,7 @@ tau::getTauValue(){
 		return tau_value;
 }
 		
-
+int tau::getRandomInTheInterval(){
+	return 0;
+}
 

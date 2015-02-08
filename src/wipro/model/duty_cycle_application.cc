@@ -60,11 +60,11 @@ duty_cycle_application::HandleMessage () {
 }
 	
 void
-duty_cycle_application::generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
+generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 	              uint32_t pktCount, Time pktInterval, bool repeat)	{
-	  if(!scanning){
+	  //if(!scanning){
 	  if (pktCount > 0)  {
-		  //Begin packet customization
+		  //Begin packet custohttp://pastebin.com/WHnAgaakmization
 		  std::stringstream ss;//create a stringstream
 		  ss << socket->GetNode()->GetId();//add number to the stream
 		  std::string s = "~" + ss.str(); //eventually check for pktSize
@@ -78,19 +78,19 @@ duty_cycle_application::generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 		  //End packet customization
 	      //socket->Send (Create<Packet> (pktSize));
 	      socket->Send (p);
-	      Simulator::Schedule (pktInterval, &duty_cycle_application::generate_traffic,
+	      Simulator::Schedule (pktInterval, &generate_traffic,
 	                           socket, pktSize,pktCount-1, pktInterval, repeat);
 	    }
 	  else
 		  if(repeat) {
 			  NS_LOG_UNCOND ("still entering?");
-			  Simulator::Schedule (pktInterval, &duty_cycle_application::generate_traffic,
+			  Simulator::Schedule (pktInterval, &generate_traffic,
 	                     socket, pktSize,pktCount-1, pktInterval, repeat);
 		  }
 		  else {
 			  socket->Close ();
 		  }
-	  }
+	 // }
 }
 
 
@@ -119,7 +119,7 @@ duty_cycle_application::doInback() {
 	        //Checking if should I broadcast myself or not at this time
 	        tt = tt.getCurrentTrickleTime();
 	        if(tt.shouldIBroadcast()){
-	        	Simulator::ScheduleNow(&duty_cycle_application::generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, false);
+	        	Simulator::ScheduleNow(&generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, false);
 	         }
 			tt = tt.getCurrentTrickleTime();
 	        interval = tt.getIntervalLength();

@@ -9,12 +9,13 @@
 def build(bld):
     module = bld.create_ns3_module('wipro', ['core'])
     module.source = [
+    	'model/SSID_formatter.cc',
         'model/wipro.cc',
         'model/tau.cc',
         'model/tau_sync.cc',
         'model/tau_to_sync.cc',
         'model/trickle_time.cc',
-        'model/SSID_formatter.cc',
+        
         'model/my_timer.cc',
         'model/wifi_scanner.cc',
         'model/wifi_receiver.cc',
@@ -31,12 +32,13 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'wipro'
     headers.source = [
+    	'model/SSID_formatter.h',
         'model/wipro.h',
         'model/tau.h',
         'model/tau_sync.h',
         'model/tau_to_sync.h',
         'model/trickle_time.h',
-        'model/SSID_formatter.h',
+        
         'model/my_timer.h',
         'model/wifi_scanner.h',
         'model/wifi_receiver.h',
