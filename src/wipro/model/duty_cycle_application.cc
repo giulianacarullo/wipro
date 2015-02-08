@@ -45,7 +45,7 @@ duty_cycle_application::flipScanning(){
 	scanning = ! scanning;
 }
 void
-duty_cycle_application::HandleMessage () {
+duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 	//just to try until complete code is produced... remove the following line
 	//scanning = true;
 	if(scanning){
@@ -56,12 +56,15 @@ duty_cycle_application::HandleMessage () {
 		NS_LOG_UNCOND ("Received one packet: node "<< r_socket->GetNode()->GetId() <<" data "  << s <<  " at "<< Simulator::Now ().GetMicroSeconds () << " microseconds");
 		checkRestartRequired();
 	}
+	else
+		NS_LOG_UNCOND("DOH");
 
 }
 	
+
 void
-generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
-	              uint32_t pktCount, Time pktInterval, bool repeat)	{
+duty_cycle_application::generate_traffic (Ptr<Socket> socket,
+		uint32_t pktCount, Time pktInterval, bool repeat)	{
 	  //if(!scanning){
 	  if (pktCount > 0)  {
 		  //Begin packet custohttp://pastebin.com/WHnAgaakmization
@@ -72,20 +75,21 @@ generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 	      std::memset(buffer, 0, s.length() + 1);
 	      int offset = 2;
 	      std::memcpy(buffer + offset, s.c_str(), s.length()+1);
-		  pktSize = s.length() +2;
-		  NS_LOG_UNCOND ("SSSSSSSSSending packet whose content is: "<< buffer+offset);
+		  int pktSize = s.length() +2;
+		  NS_LOG_UNCOND ("Sending packet whose content is: "<< buffer+offset);
 		  Packet *p = new Packet(buffer+offset, pktSize);
 		  //End packet customization
 	      //socket->Send (Create<Packet> (pktSize));
 	      socket->Send (p);
-	      Simulator::Schedule (pktInterval, &generate_traffic,
-	                           socket, pktSize,pktCount-1, pktInterval, repeat);
+	      Simulator::Schedule (pktInterval, &duty_cycle_application::generate_traffic,
+	                           socket, pktCount-1, pktInterval, repeat);
+
 	    }
 	  else
 		  if(repeat) {
 			  NS_LOG_UNCOND ("still entering?");
-			  Simulator::Schedule (pktInterval, &generate_traffic,
-	                     socket, pktSize,pktCount-1, pktInterval, repeat);
+			  Simulator::Schedule (pktInterval, &duty_cycle_application::generate_traffic,
+	                     socket, pktCount-1, pktInterval, repeat);
 		  }
 		  else {
 			  socket->Close ();
@@ -97,6 +101,8 @@ generate_traffic (Ptr<Socket> socket, uint32_t pktSize,
 
 void
 duty_cycle_application::doInback() {
+
+	//Simulator::Schedule (Seconds(2.0), &duty_cycle_application::gen_traffic, m_socket);
     	tt = tt.getCurrentTrickleTime();
     	interval = tt.getIntervalLength();
     	//managing only-listening period
@@ -119,7 +125,7 @@ duty_cycle_application::doInback() {
 	        //Checking if should I broadcast myself or not at this time
 	        tt = tt.getCurrentTrickleTime();
 	        if(tt.shouldIBroadcast()){
-	        	Simulator::ScheduleNow(&generate_traffic, m_socket,packetSize, numPackets, interPacketInterval, false);
+	        	Simulator::ScheduleNow(&duty_cycle_application::generate_traffic, m_socket,numPackets, interPacketInterval, false);
 	         }
 			tt = tt.getCurrentTrickleTime();
 	        interval = tt.getIntervalLength();
@@ -149,7 +155,7 @@ duty_cycle_application::doInback() {
 		r_socket = Socket::CreateSocket (GetNode(), tid);
 		r_socket->Bind (local);
 		r_socket->Listen();
-		//r_socket->SetRecvCallback (MakeCallback (&duty_cycle_application::HandleMessage));
+		r_socket->SetRecvCallback (MakeCallback (&duty_cycle_application::HandleMessage, this));
 
 	}
 	
