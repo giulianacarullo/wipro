@@ -14,10 +14,10 @@
 #include <time.h>	// class needs this inclusion
 
 using namespace std;
-class timer {
+class my_timer {
 public:
-	timer();
-	virtual ~timer();
+	my_timer();
+	virtual ~my_timer();
 	void           start();
 	void           stop();
 	void           reset();

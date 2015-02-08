@@ -18,7 +18,7 @@
 //#include "ns3/ipv4-static-routing-helper.h"
 //#include "ns3/ipv4-list-routing-helper.h"
 #include "trickle_time.h"
-#include "timer.h"
+#include "my_timer.h"
 #include "wifi_receiver.h"
 
 using namespace ns3;
@@ -37,16 +37,16 @@ private:
 
     wifi_receiver receiver_wifi;
   	trickle_time tt;
-  	timer resultsTimer;
+  	my_timer resultsTimer;
   	int interval;
-  	bool firstExecution = true;
-  	bool checkRestartRequired();
+  	bool firstExecution;
+  	void checkRestartRequired();
   	void HandleMessage (Ptr<Socket> socket);
   	void doInback();
   	//Managing packets
-  	uint32_t packetSize = 1000; // bytes
-  	uint32_t numPackets = 1;
-  	Time interPacketInterval = Seconds (1.0);
+  	uint32_t packetSize;
+  	uint32_t numPackets;
+  	Time interPacketInterval;
   virtual void StartApplication (void);
   virtual void StopApplication (void);
   void flipScanning();

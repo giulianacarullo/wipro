@@ -25,9 +25,9 @@ private:
 
 	bool net_changed;
 
-private:
-	trickle_time();
+
 public:
+	trickle_time();
 	trickle_time(bool syncNeeded);
 	virtual ~trickle_time();
 	void sameMetadata();

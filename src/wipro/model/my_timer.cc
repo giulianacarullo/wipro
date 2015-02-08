@@ -8,7 +8,7 @@
 #include "my_timer.h"
 
 
-timer::timer() {
+my_timer::my_timer() {
 	// TODO Auto-generated constructor stub
 	resetted = true;
 	running = false;
@@ -16,13 +16,13 @@ timer::timer() {
 	end = 0;
 }
 
-timer::~timer() {
+my_timer::~my_timer() {
 	// TODO Auto-generated destructor stub
 }
 
 
 
-void timer::start() {
+void my_timer::start() {
 	if(! running) {
 		if(resetted)
 			beg = (unsigned long) clock();
@@ -34,7 +34,7 @@ void timer::start() {
 }
 
 
-void timer::stop() {
+void my_timer::stop() {
 	if(running) {
 		end = (unsigned long) clock();
 		running = false;
@@ -42,7 +42,7 @@ void timer::stop() {
 }
 
 
-void timer::reset() {
+void my_timer::reset() {
 	bool wereRunning = running;
 	if(wereRunning)
 		stop();
@@ -54,27 +54,27 @@ void timer::reset() {
 }
 
 
-bool timer::isRunning() {
+bool my_timer::isRunning() {
 	return running;
 }
 
 
-unsigned long timer::getTime() {
+unsigned long my_timer::getTime() {
 		if(running)
 			return ((unsigned long) clock() - beg);
 		else
 			return end - beg;
 }
 
-unsigned long timer::getTimeInSeconds(){
-		if(running)
-			return ((unsigned long) clock() - beg) / std::CLOCKS_PER_SEC;
-		else
-			return (end - beg) / CLOCKS_PER_SEC;
+unsigned long my_timer::getTimeInSeconds(){
+		if( running )
+			return ((unsigned long) clock() - beg) / CLOCKS_PER_SEC;
+
+		return (end - beg) / CLOCKS_PER_SEC;
 }
 
 bool
-timer::isOver(unsigned long seconds) {
+my_timer::isOver(unsigned long seconds) {
 	return seconds >= getTime();
 }
 

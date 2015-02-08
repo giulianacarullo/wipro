@@ -11,7 +11,7 @@
 
 wifi_scanner::wifi_scanner() {
 	// TODO Auto-generated constructor stub
-
+	 firstExecution= true;
 }
 
 wifi_scanner::~wifi_scanner() {
@@ -78,11 +78,11 @@ wifi_scanner::doInback() {
             		tt.intervalCompleted();
             	}
             	else {
-            		resultsTimer = new std::timer();
+            		resultsTimer = my_timer();
             		firstExecution = false;
             	}
-                int onlyListeningTime = tt.getOnlyListeningTime();
-                int rate = (onlyListeningTime>6000)?6000:onlyListeningTime;
+                //int onlyListeningTime = tt.getOnlyListeningTime();
+                //int rate = (onlyListeningTime>6000)?6000:onlyListeningTime;
                 //Log.i("WifiScanner", "Wifi Scanning and Updating");
                 /*************************** UNCOMMENT
                	resultsTimer.scheduleAtFixedRate(new TimerTask() {

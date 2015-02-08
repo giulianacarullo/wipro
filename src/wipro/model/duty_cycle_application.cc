@@ -10,15 +10,18 @@
 duty_cycle_application::duty_cycle_application() :
     beaconBroadcast(Ipv4Address("255.255.255.255"), 80),
     local(Ipv4Address::GetAny (), 80) {
-
+	firstExecution = true;
 	scanning = false;
+	packetSize = 1000; // bytes
+	numPackets = 1;
+    interPacketInterval = Seconds (1.0);
 }
 duty_cycle_application::~duty_cycle_application() {
 	// TODO Auto-generated destructor stub
 }
 //class duty_cycle_application : public Application {
 
-bool
+void
 duty_cycle_application::checkRestartRequired(){
 	//result should be updated as soon as they are available
 	//Log.i("WifiScanner", " Wifi Updating results");
@@ -105,14 +108,14 @@ duty_cycle_application::doInback() {
 	           		tt.intervalCompleted();
 	         }
 	         else {
-	         		resultsTimer = new timer();
+	         		resultsTimer = my_timer();
 	          		firstExecution = false;
 	         }
 	         int onlyListeningTime = tt.getOnlyListeningTime();
 	         int rate = (onlyListeningTime>6000)?6000:onlyListeningTime;//min between 6000 and onlyListeningTime
 
-	         Simulator::Schedule(Seconds(rate), &flipScanning);
-	         Simulator::Schedule(Seconds(onlyListeningTime), &flipScanning);
+	         Simulator::Schedule(Seconds(rate), &duty_cycle_application::flipScanning,this);
+	         Simulator::Schedule(Seconds(onlyListeningTime), &duty_cycle_application::flipScanning,this);
 	        //Checking if should I broadcast myself or not at this time
 	        tt = tt.getCurrentTrickleTime();
 	        if(tt.shouldIBroadcast()){
@@ -124,7 +127,7 @@ duty_cycle_application::doInback() {
 
 	        //}, interval);
 			//substituting postDelay, interval
-			Simulator::Schedule(Seconds(interval), &doInback);
+			Simulator::Schedule(Seconds(interval), &duty_cycle_application::doInback, this);
 		}
 	    //}
 
@@ -146,7 +149,7 @@ duty_cycle_application::doInback() {
 		r_socket = Socket::CreateSocket (GetNode(), tid);
 		r_socket->Bind (local);
 		r_socket->Listen();
-		r_socket->SetRecvCallback (MakeCallback (&HandleMessage));
+		r_socket->SetRecvCallback (MakeCallback (&duty_cycle_application::HandleMessage,this));
 
 	}
 	

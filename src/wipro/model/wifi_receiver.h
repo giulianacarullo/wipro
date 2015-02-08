@@ -7,8 +7,8 @@
 
 #ifndef WIFIRECEIVER_H_
 #define WIFIRECEIVER_H_
-#include <trickle_time.h>
-#include <SSID_formatter.h>
+#include "trickle_time.h"
+#include "SSID_formatter.h"
 #include <map>
 
 using namespace ns3;

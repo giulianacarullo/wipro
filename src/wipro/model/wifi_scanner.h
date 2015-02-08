@@ -10,21 +10,21 @@
 
 #include "ns3/core-module.h"
 #include "trickle_time.h"
-#include "timer.h"
+#include "my_timer.h"
 #include "wifi_receiver.h"
 using namespace ns3;
 
 class wifi_scanner {
 private:
-	std::string SSID = "";
+	string SSID;
 	//private WifiManager mainWifi;
 	wifi_receiver receiver_wifi;
 	//private BeaconStuffing bs;
 	//private final Handler handler = new Handler();
 	trickle_time tt;
-	std::timer resultsTimer;
+	my_timer resultsTimer;
 	int interval;
-	bool firstExecution = true;
+	bool firstExecution;
 
 public:
 	wifi_scanner();
