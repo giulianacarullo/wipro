@@ -160,6 +160,7 @@ duty_cycle_application::doInback() {
 	         int onlyListeningTime = tt.getOnlyListeningTime();
 	         //rate is the delay in milliseconds before task is to be executed.
 	         int rate = 1;
+	         interval = tt.getIntervalLength();
 	         //int rate = (onlyListeningTime>6)?6:onlyListeningTime;//min between 6000 and onlyListeningTime
 	         NS_LOG_UNCOND(GetNode( )->GetId()<<" - Interval size: "<< interval <<" scanning in seconds "<< rate << " for "<<onlyListeningTime <<" seconds");
 	         //Flipping scanning after rate seconds, which means we are entering the scan state
