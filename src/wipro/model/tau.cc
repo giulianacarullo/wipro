@@ -5,7 +5,7 @@
 tau::tau(){
 			//tl = 1000; // default value (time in milliseconds) 1 s
 			//tu = 3600000; //default value 1 h
-			tl = 1; //1 s
+			tl = 3; //3 s
 			tu = 3600; //default 1 h
 			tau_value = tl;
 }

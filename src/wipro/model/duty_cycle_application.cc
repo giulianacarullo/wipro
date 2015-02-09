@@ -143,6 +143,7 @@ duty_cycle_application::doInback() {
 	//Simulator::Schedule (Seconds(2.0), &duty_cycle_application::gen_traffic, m_socket);
 		//scanning = true; //when the interval starts, the peer is in scan state
     	tt = tt.getCurrentTrickleTime();
+    	tt.intervalCompleted(); //check if it is correct to call this method here
     	interval = tt.getIntervalLength();
     	//managing only-listening period
 
@@ -158,21 +159,25 @@ duty_cycle_application::doInback() {
 	         }
 	         int onlyListeningTime = tt.getOnlyListeningTime();
 	         //rate is the delay in milliseconds before task is to be executed.
-	         int rate = (onlyListeningTime>6000)?6000:onlyListeningTime;//min between 6000 and onlyListeningTime
-	         NS_LOG_UNCOND("Rate "<< rate << " only list "<<onlyListeningTime);
+	         int rate = 1;
+	         //int rate = (onlyListeningTime>6)?6:onlyListeningTime;//min between 6000 and onlyListeningTime
+	         NS_LOG_UNCOND("Interval size: "<< interval <<" gossiping in seconds "<< rate << " for "<<onlyListeningTime <<" seconds");
 	         //Flipping scanning after rate seconds, which means we are entering the scan state
 	         Simulator::Schedule(Seconds(rate), &duty_cycle_application::flipScanning,this);
 	         // exiting the scan state after onlyLusteningTime
 	         Simulator::Schedule(Seconds(onlyListeningTime), &duty_cycle_application::flipScanning,this);
 	        //Checking if should I broadcast myself or not at this time
-	        tt = tt.getCurrentTrickleTime();
+	        //tt = tt.getCurrentTrickleTime();
 	        if(tt.shouldIBroadcast()){
-	        	NS_LOG_UNCOND("Should I broadcast!");
-	        	//numPackets = 4; //sending 4 packets, one for every second
+	        	//NS_LOG_UNCOND("Should I broadcast!");
+	        	numPackets = 2; //sending 4 packets, one for every second
 	        	Simulator::ScheduleNow(&generate_traffic, m_socket,this, numPackets, interPacketInterval, false);
 	         }
-			tt = tt.getCurrentTrickleTime();
-	        interval = tt.getIntervalLength();
+				////////////////////OLD code
+				//tt = tt.getCurrentTrickleTime();
+				//interval = tt.getIntervalLength();
+				// NS_LOG_UNCOND("Interval size: "<< interval);
+				//////////////////end OLD code
 	       // doInback();//???? not sure
 
 	        //}, interval);
