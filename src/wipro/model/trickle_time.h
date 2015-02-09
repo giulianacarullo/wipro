@@ -19,10 +19,11 @@ class trickle_time {
 private:
 	int c; //counter
 	int k; //threshold (usually a small fixed integer, e.g. 1 or 2)
-	tau tau_v; //time constant
+	tau_to_sync tau_v_ts; //time constant
+	tau_sync tau_v_s;
 	int t; //timer in range [0, tau] or [] [tau/2, tau] (depending on sync assumptions)
 	trickle_time *tt;
-
+    bool sync_required;
 	bool net_changed;
 
 

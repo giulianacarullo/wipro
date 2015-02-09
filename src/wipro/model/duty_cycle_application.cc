@@ -15,6 +15,7 @@ duty_cycle_application::duty_cycle_application() :
 	packetSize = 1000; // bytes
 	numPackets = 1;
     interPacketInterval = Seconds (1.0);
+    tt = trickle_time(true);
 }
 duty_cycle_application::~duty_cycle_application() {
 	// TODO Auto-generated destructor stub
@@ -94,7 +95,7 @@ duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 		checkRestartRequired();
 	}
 	else
-		NS_LOG_UNCOND("DOH");
+		NS_LOG_UNCOND("Dropped packet cause of scanning");
 
 }
 	
@@ -140,6 +141,7 @@ void
 duty_cycle_application::doInback() {
 
 	//Simulator::Schedule (Seconds(2.0), &duty_cycle_application::gen_traffic, m_socket);
+		//scanning = true; //when the interval starts, the peer is in scan state
     	tt = tt.getCurrentTrickleTime();
     	interval = tt.getIntervalLength();
     	//managing only-listening period
@@ -155,14 +157,18 @@ duty_cycle_application::doInback() {
 	          		firstExecution = false;
 	         }
 	         int onlyListeningTime = tt.getOnlyListeningTime();
+	         //rate is the delay in milliseconds before task is to be executed.
 	         int rate = (onlyListeningTime>6000)?6000:onlyListeningTime;//min between 6000 and onlyListeningTime
 	         NS_LOG_UNCOND("Rate "<< rate << " only list "<<onlyListeningTime);
+	         //Flipping scanning after rate seconds, which means we are entering the scan state
 	         Simulator::Schedule(Seconds(rate), &duty_cycle_application::flipScanning,this);
+	         // exiting the scan state after onlyLusteningTime
 	         Simulator::Schedule(Seconds(onlyListeningTime), &duty_cycle_application::flipScanning,this);
 	        //Checking if should I broadcast myself or not at this time
 	        tt = tt.getCurrentTrickleTime();
 	        if(tt.shouldIBroadcast()){
 	        	NS_LOG_UNCOND("Should I broadcast!");
+	        	//numPackets = 4; //sending 4 packets, one for every second
 	        	Simulator::ScheduleNow(&generate_traffic, m_socket,this, numPackets, interPacketInterval, false);
 	         }
 			tt = tt.getCurrentTrickleTime();
@@ -171,8 +177,9 @@ duty_cycle_application::doInback() {
 
 	        //}, interval);
 			//substituting postDelay, interval
-	        Simulator::ScheduleNow(&generate_traffic, m_socket,this, interval, interPacketInterval, false);
-			Simulator::Schedule(Seconds(interval), &duty_cycle_application::doInback, this);
+	        //Simulator::ScheduleNow(&generate_traffic, m_socket,this, interval, interPacketInterval, false);
+			//Sleeping for the remaining part of the interval
+	        Simulator::Schedule(Seconds(interval), &duty_cycle_application::doInback, this);
 		}
 	    //}
 

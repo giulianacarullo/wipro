@@ -31,11 +31,16 @@ trickle_time::~trickle_time() {
 		net_changed = false;
 		c = 0;
 		//tau_v = (syncNeeded)? tau_to_sync():tau_sync();
-		if(syncNeeded)
-			tau_v = tau_to_sync();
-		else
-			tau_v = tau_sync();
-		t = tau_v.getRandomInTheInterval();
+		sync_required = syncNeeded;
+		if(syncNeeded) {
+			tau_v_ts = tau_to_sync();
+			t = tau_v_ts.getRandomInTheInterval();
+		}
+		else {
+			tau_v_s = tau_sync();
+			t = tau_v_s.getRandomInTheInterval();
+		}
+
 	}
 
 	/*
@@ -64,8 +69,14 @@ trickle_time::~trickle_time() {
 	void trickle_time::intervalCompleted(){
 		c = 0;
 		net_changed = false;
-		tau_v.tauExpired();
-		t = tau_v.getRandomInTheInterval();
+		if(sync_required) {
+			tau_v_ts.tauExpired();
+			t = tau_v_ts.getRandomInTheInterval();
+		}
+		else {
+			tau_v_s.tauExpired();
+			t = tau_v_s.getRandomInTheInterval();
+		}
 	}
 
 	int trickle_time::getOnlyListeningTime(){
@@ -79,11 +90,16 @@ trickle_time::~trickle_time() {
 	 */
 	void trickle_time::netChanged(){
 		net_changed = true;
-		tau_v.networkChanged();
+		if(sync_required)
+			tau_v_ts.networkChanged();
+		else
+			tau_v_s.networkChanged();
 	}
 
 	int trickle_time::getIntervalLength(){
-		return tau_v.getTauValue();
+		if(sync_required)
+			return tau_v_ts.getTauValue();
+		return tau_v_s.getTauValue();
 	}
 
 	bool trickle_time::isNetChanged(){
