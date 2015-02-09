@@ -23,26 +23,37 @@ wifi_receiver::wifi_receiver(trickle_time t){
 	//this.mainWifi = mainWifi;
 	//this.map = new HashMap<String, ScanResult>();
 	//this.potentiallyLeft = new HashMap<String, ScanResult>();
+	mappina = std::map<std::string,std::string>();
 	tt = t;
 }
 
 void
 wifi_receiver::add_SSID(std::string SSID){
      //Considering only near peers
-     if(SSID_formatter::checkFormat(SSID)) {
+     //if(SSID_formatter::checkFormat(SSID)) { //no need for checkformat! it is just a simulation!
     	 //Log.i("WifiRec", "wifi peer recognized"+SSID);
-    	 std::string printable = SSID_formatter::printableSSID(SSID);
-    	 mappina[printable] = printable;
+		//std::cout<<"WR- received SSID" <<SSID;
+    	 //std::string printable = SSID_formatter::printableSSID(SSID);
+	     //std::string printable = SSID;
+		std::map<std::string,std::string>::iterator it = mappina.end();
+	    mappina.insert(it, std::pair<std::string,std::string>(SSID,SSID) );
+    	 //mappina[SSID] = SSID;
+    	 //std::cout<<"WR "<< SSID <<" - " << printable <<" azz "<<std::endl;
     	 //	if(potentiallyLeft.containsKey(printable))
     	 //		potentiallyLeft.remove(printable);
     	 //it is a peer, must check if it changed or not
     	 tt = tt.getCurrentTrickleTime();
-         if(!SSID_formatter::netChanged(SSID))
+         if(!SSID_formatter::netChanged(SSID)) {
+        	 	 //NS_LOG_UNCOND("WR - FOUND again a peer " <<SSID);
           		tt.sameMetadata();
-         else
+         }
+         else {
           		tt.netChanged();
-	          	//tt.netChanged();
-     }
+          		//NS_LOG_UNCOND("WR - FOUND a new peer: " << SSID);
+         }
+
+     //}
+
      //Log.i("WifiRec", "wifi recognized nets "+SSID);
      //checking for no more available networks
      //adjust it to remove the SSID after n seconds it has not been discovered again
@@ -55,7 +66,21 @@ wifi_receiver::add_SSID(std::string SSID){
             	            	}
             	 }*/
         }
+void
+wifi_receiver::printResults(){
+	//std::cout << "Nodes discovered so far: ";
+	std::string discovered ="";
 
+	for(std::map<std::string,std::string>::iterator iter = mappina.begin(); iter != mappina.end(); ++iter)
+	{
+		discovered = discovered + iter->first + " - ";
+		//std::cout << iter->first <<" ";
+	//ignore value
+	//Value v = iter->second;
+	}
+
+	std::cout << discovered << std::endl;
+}
 /*
 	ArrayList<String> getResults(){
 		//check this

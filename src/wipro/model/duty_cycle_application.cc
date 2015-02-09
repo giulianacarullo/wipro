@@ -16,7 +16,9 @@ duty_cycle_application::duty_cycle_application() :
 	numPackets = 1;
     interPacketInterval = Seconds (1.0);
     tt = trickle_time(true);
+    receiver_wifi = wifi_receiver(tt);
 }
+
 duty_cycle_application::~duty_cycle_application() {
 	// TODO Auto-generated destructor stub
 }
@@ -32,11 +34,12 @@ duty_cycle_application::checkRestartRequired(){
 	//updateResults(receiverWifi.getResults());
 	//if i find a new peer I restart with a more intense
 	//broadcasting
-	if(tt.isNetChanged())
+	if(tt.isNetChanged()) {
 		resultsTimer.reset();
-	//resultsTimer.purge();
-	//restarting everything
-	firstExecution = true;
+		//resultsTimer.purge();
+		//restarting everything
+		firstExecution = true;
+	}
 
 }
 
@@ -49,13 +52,14 @@ generate_traffic (Ptr<Socket> socket, duty_cycle_application *dca,
 			  //Begin packet custom http://pastebin.com/WHnAgaakmization
 			  std::stringstream ss;//create a stringstream
 			  ss << socket->GetNode()->GetId();//add number to the stream
-			  std::string s = "~" + ss.str(); //eventually check for pktSize
+			  //std::string s = "~" + ss.str(); //eventually check for pktSize
+			  std::string s = ss.str();
 			  uint8_t *buffer = (uint8_t*)std::malloc(s.length() + 1);
 			  std::memset(buffer, 0, s.length() + 1);
 			  int offset = 2;
 			  std::memcpy(buffer + offset, s.c_str(), s.length()+1);
 			  int pktSize = s.length() +2;
-			  NS_LOG_UNCOND ("Sending packet whose content is: "<< buffer+offset);
+			  //NS_LOG_UNCOND ("Sending packet whose content is: "<< buffer+offset);
 			  Packet *p = new Packet(buffer+offset, pktSize);
 			  //End packet customization
 			  //socket->Send (Create<Packet> (pktSize));
@@ -67,7 +71,7 @@ generate_traffic (Ptr<Socket> socket, duty_cycle_application *dca,
 	  else
 		  if(repeat) {
 			  if(!dca->isScanning()){
-				  NS_LOG_UNCOND ("still entering?");
+				  //NS_LOG_UNCOND ("still entering?");
 				  Simulator::Schedule (pktInterval, &generate_traffic,
 	                     socket, dca,pktCount-1, pktInterval, repeat);
 			  }
@@ -92,6 +96,10 @@ duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 	    pp->CopyData (data, pp->GetSize());
 		std::string s(data, data+pp->GetSize() );
 		NS_LOG_UNCOND ("Received one packet: node "<< r_socket->GetNode()->GetId() <<" data "  << s <<  " at "<< Simulator::Now ().GetMicroSeconds () << " microseconds");
+		receiver_wifi.add_SSID(s);
+		std::cout<< "DCA - Node "<<GetNode()->GetId() << " recognized: ";
+		receiver_wifi.printResults();
+		std::cout<<" so far"<<std::endl;
 		checkRestartRequired();
 	}
 	else//IDEA: add statistics on dropped packets!

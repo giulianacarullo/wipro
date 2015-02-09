@@ -25,6 +25,7 @@ public:
 	virtual ~wifi_receiver();
 	wifi_receiver(trickle_time t);
 	void add_SSID(std::string SSID);
+	void printResults();
 };
 
 

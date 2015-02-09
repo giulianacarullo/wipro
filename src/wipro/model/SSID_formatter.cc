@@ -25,8 +25,9 @@ bool SSID_formatter::netChanged(std::string SSID){
 }
 std::string
 SSID_formatter::printableSSID(std::string SSID){
-  		if(SSID_formatter::checkFormat(SSID))
-  			return SSID.substr(1, SSID.size()-1);
-  		return "";
+  		//if(SSID_formatter::checkFormat(SSID))
+  		//	return SSID.substr(1, SSID.size()-1);
+  		//return "";
+	return SSID.substr(1, SSID.size()-1);
 }
 

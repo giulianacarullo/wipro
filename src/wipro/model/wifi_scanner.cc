@@ -31,11 +31,12 @@ wifi_scanner::handleMessage() {
 			//updateResults(receiverWifi.getResults());
 			//if i find a new peer I restart with a more intense
 			//broadcasting
-			if(tt.isNetChanged())
+			if(tt.isNetChanged()){
 				resultsTimer.reset();
 				//resultsTimer.purge();
 				//restarting everything
 				firstExecution = true;
+			}
 			//IDEA: add statistics on dropped packets!
         }
 

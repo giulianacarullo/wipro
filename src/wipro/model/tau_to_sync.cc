@@ -21,7 +21,6 @@ tau_to_sync::getRandomInTheInterval(){
 		//return tau_value /2 + (int)(Math.random() * ((tau_value-(tau_value/2)) + 1));
 
 		int tau_value = tau::getTauValue();
-		NS_LOG_UNCOND("Current tau value: "<< tau_value);
 		return tau_value/2 + (rand() % tau_value - (tau_value/2)+1);
 
 }
