@@ -97,9 +97,8 @@ duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 		std::string s(data, data+pp->GetSize() );
 		NS_LOG_UNCOND ("Received one packet: node "<< r_socket->GetNode()->GetId() <<" data "  << s <<  " at "<< Simulator::Now ().GetMicroSeconds () << " microseconds");
 		receiver_wifi.add_SSID(s);
-		std::cout<< "DCA - Node "<<GetNode()->GetId() << " recognized: ";
+		NS_LOG_UNCOND("DCA - Node "<<GetNode()->GetId() << " recognized: ");
 		receiver_wifi.printResults();
-		std::cout<<" so far"<<std::endl;
 		checkRestartRequired();
 	}
 	else//IDEA: add statistics on dropped packets!

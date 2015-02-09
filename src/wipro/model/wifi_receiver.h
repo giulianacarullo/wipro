@@ -18,6 +18,8 @@ private:
 //private HashMap<String, ScanResult> map;
 //private HashMap<String, ScanResult> potentiallyLeft;
 std::map<std::string, std::string> mappina;
+std::set<std::string> settino;
+
 trickle_time tt;
 
 public:

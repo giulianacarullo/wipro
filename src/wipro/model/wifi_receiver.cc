@@ -35,8 +35,9 @@ wifi_receiver::add_SSID(std::string SSID){
 		//std::cout<<"WR- received SSID" <<SSID;
     	 //std::string printable = SSID_formatter::printableSSID(SSID);
 	     //std::string printable = SSID;
-		std::map<std::string,std::string>::iterator it = mappina.end();
-	    mappina.insert(it, std::pair<std::string,std::string>(SSID,SSID) );
+	    //mappina.insert(std::pair<std::string,std::string>(SSID,SSID) );
+		if(settino.count(SSID) == 0)
+			settino.insert(SSID);
     	 //mappina[SSID] = SSID;
     	 //std::cout<<"WR "<< SSID <<" - " << printable <<" azz "<<std::endl;
     	 //	if(potentiallyLeft.containsKey(printable))
@@ -69,17 +70,18 @@ wifi_receiver::add_SSID(std::string SSID){
 void
 wifi_receiver::printResults(){
 	//std::cout << "Nodes discovered so far: ";
-	std::string discovered ="";
+	std::string discovered = "";
 
-	for(std::map<std::string,std::string>::iterator iter = mappina.begin(); iter != mappina.end(); ++iter)
+	//for(std::map<std::string,std::string>::iterator iter = mappina.begin(); iter != mappina.end(); ++iter)
+	for(std::set<std::string>::iterator iter = settino.begin(); iter != settino.end(); ++iter)
 	{
-		discovered = discovered + iter->first + " - ";
+		discovered = discovered + iter->data() + " - ";
 		//std::cout << iter->first <<" ";
 	//ignore value
 	//Value v = iter->second;
 	}
-
-	std::cout << discovered << std::endl;
+	NS_LOG_UNCOND( discovered);
+	//std::cout << discovered << std::endl;
 }
 /*
 	ArrayList<String> getResults(){
