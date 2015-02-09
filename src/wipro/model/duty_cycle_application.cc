@@ -37,7 +37,7 @@ duty_cycle_application::checkRestartRequired(){
 	//resultsTimer.purge();
 	//restarting everything
 	firstExecution = true;
-	//IDEA: add statistics on dropped packets!
+
 }
 
 void
@@ -79,7 +79,7 @@ generate_traffic (Ptr<Socket> socket, duty_cycle_application *dca,
 }
 void
 duty_cycle_application::flipScanning(){
-	NS_LOG_UNCOND ("FLIP: "<<scanning);
+	NS_LOG_UNCOND (GetNode( )->GetId()<<" is FLIP: "<<scanning);
 	scanning = ! scanning;
 }
 void
@@ -94,8 +94,8 @@ duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 		NS_LOG_UNCOND ("Received one packet: node "<< r_socket->GetNode()->GetId() <<" data "  << s <<  " at "<< Simulator::Now ().GetMicroSeconds () << " microseconds");
 		checkRestartRequired();
 	}
-	else
-		NS_LOG_UNCOND("Dropped packet cause of scanning");
+	else//IDEA: add statistics on dropped packets!
+		NS_LOG_UNCOND(GetNode()->GetId()<<" Dropped packet cause of scanning");
 
 }
 	
@@ -161,7 +161,7 @@ duty_cycle_application::doInback() {
 	         //rate is the delay in milliseconds before task is to be executed.
 	         int rate = 1;
 	         //int rate = (onlyListeningTime>6)?6:onlyListeningTime;//min between 6000 and onlyListeningTime
-	         NS_LOG_UNCOND("Interval size: "<< interval <<" gossiping in seconds "<< rate << " for "<<onlyListeningTime <<" seconds");
+	         NS_LOG_UNCOND(GetNode( )->GetId()<<" - Interval size: "<< interval <<" scanning in seconds "<< rate << " for "<<onlyListeningTime <<" seconds");
 	         //Flipping scanning after rate seconds, which means we are entering the scan state
 	         Simulator::Schedule(Seconds(rate), &duty_cycle_application::flipScanning,this);
 	         // exiting the scan state after onlyLusteningTime

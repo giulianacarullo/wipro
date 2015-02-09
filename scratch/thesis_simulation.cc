@@ -309,7 +309,7 @@ int main (int argc, char *argv[])
   apps.Start(Seconds(0));
   //for(int i = 0; i<5; i++)
   //	  Simulator::Schedule(Seconds(i), &PrintNodesPosition, c);
-  Simulator::Stop (Seconds (30.0));
+  Simulator::Stop (Seconds (60.0));
   Simulator::Run ();
   Simulator::Destroy ();
 
