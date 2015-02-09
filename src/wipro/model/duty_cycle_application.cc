@@ -79,7 +79,7 @@ generate_traffic (Ptr<Socket> socket, duty_cycle_application *dca,
 }
 void
 duty_cycle_application::flipScanning(){
-	NS_LOG_UNCOND (GetNode( )->GetId()<<" is FLIP: "<<scanning);
+	//NS_LOG_UNCOND (GetNode( )->GetId()<<" is FLIP: "<<scanning);
 	scanning = ! scanning;
 }
 void
