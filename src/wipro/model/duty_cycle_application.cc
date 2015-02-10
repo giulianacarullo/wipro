@@ -112,11 +112,11 @@ duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 	}
 	else {//IDEA: add statistics on dropped packets! (including end peers but dropped (bad) or old peer dropped (good)
 		if(receiver_wifi.contains(ssid)){
-			stats.addDroppedKnownPacket(ssid);
+			stats.addDroppedKnownPacket();
 			NS_LOG_UNCOND(GetNode()->GetId()<<" Dropped packet cause of scanning - already known");
 		}
 		else{
-			stats.addDroppedUnknownPacket(ssid);
+			stats.addDroppedUnknownPacket();
 			NS_LOG_UNCOND(GetNode()->GetId()<<" Dropped packet cause of scanning - not known");
 		}
 	}

@@ -16,14 +16,13 @@ using namespace ns3;
 
 class statistics {
 private:
-	std::map<int, int> dropped_known_packets;
-	std::map<int, int> dropped_unknown_packets;
+	int dkp;
+	int dukp;
 public:
 	statistics();
 	virtual ~statistics();
-	void addDroppedKnownPacket(std::string ssid);
-	void addDroppedUnknownPacket(std::string ssid);
-	void printDropped();
+	void addDroppedKnownPacket();
+	void addDroppedUnknownPacket();
 	void printDropped(int id);
 };
 
