@@ -58,7 +58,7 @@ generate_traffic (Ptr<Socket> socket, duty_cycle_application *dca,
 			  std::memset(buffer, 0, s.length() + 1);
 			  int offset = 2;
 			  std::memcpy(buffer + offset, s.c_str(), s.length()+1);
-			  int pktSize = s.length() +2;
+			  int pktSize = s.length() +1;
 			  //NS_LOG_UNCOND ("Sending packet whose content is: "<< buffer+offset);
 			  Packet *p = new Packet(buffer+offset, pktSize);
 			  //End packet customization
@@ -90,20 +90,22 @@ void
 duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 	//just to try until complete code is produced... remove the following line
 	//scanning = true;
+	Ptr< Packet > pp = r_socket->Recv();
+	unsigned char *data = new unsigned char(pp->GetSize());
+	pp->CopyData (data, pp->GetSize());
+	std::string s(data, data+pp->GetSize() );
 	if(scanning){
-	    Ptr< Packet > pp = r_socket->Recv();
-	    unsigned char *data = new unsigned char(pp->GetSize());
-	    pp->CopyData (data, pp->GetSize());
-		std::string s(data, data+pp->GetSize() );
-		NS_LOG_UNCOND ("Received one packet: node "<< r_socket->GetNode()->GetId() <<" data "  << s <<  " at "<< Simulator::Now ().GetMicroSeconds () << " microseconds");
 		receiver_wifi.add_SSID(s);
-		NS_LOG_UNCOND("DCA - Node "<<GetNode()->GetId() << " recognized: ");
+		NS_LOG_UNCOND("DCAA - Node "<<GetNode()->GetId() << " recognized: ");
 		receiver_wifi.printResults();
 		checkRestartRequired();
 	}
-	else//IDEA: add statistics on dropped packets!
-		NS_LOG_UNCOND(GetNode()->GetId()<<" Dropped packet cause of scanning");
-
+	else {//IDEA: add statistics on dropped packets! (including end peers but dropped (bad) or old peer dropped (good)
+		if(receiver_wifi.contains(s))
+			NS_LOG_UNCOND(GetNode()->GetId()<<" Dropped packet cause of scanning - already known");
+		else
+			NS_LOG_UNCOND(GetNode()->GetId()<<" Dropped packet cause of scanning - not known");
+	}
 }
 	
 /*
@@ -169,7 +171,7 @@ duty_cycle_application::doInback() {
 	         int rate = 1;
 	         interval = tt.getIntervalLength();
 	         //int rate = (onlyListeningTime>6)?6:onlyListeningTime;//min between 6000 and onlyListeningTime
-	         NS_LOG_UNCOND(GetNode( )->GetId()<<" - Interval size: "<< interval <<" scanning in seconds "<< rate << " for "<<onlyListeningTime <<" seconds");
+	         NS_LOG_UNCOND(GetNode( )->GetId()<<" - Interval size: "<< interval <<" scanning for "<<onlyListeningTime <<" seconds");
 	         //Flipping scanning after rate seconds, which means we are entering the scan state
 	         Simulator::Schedule(Seconds(rate), &duty_cycle_application::flipScanning,this);
 	         // exiting the scan state after onlyLusteningTime

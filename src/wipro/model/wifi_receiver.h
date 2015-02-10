@@ -26,6 +26,7 @@ public:
 	wifi_receiver();
 	virtual ~wifi_receiver();
 	wifi_receiver(trickle_time t);
+	bool contains(std::string SSID);
 	void add_SSID(std::string SSID);
 	void printResults();
 };

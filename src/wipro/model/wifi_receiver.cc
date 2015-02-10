@@ -67,6 +67,12 @@ wifi_receiver::add_SSID(std::string SSID){
             	            	}
             	 }*/
         }
+bool
+wifi_receiver::contains(std::string SSID){
+	if(settino.count(SSID)==0)
+		return false;
+	return true;
+}
 void
 wifi_receiver::printResults(){
 	//std::cout << "Nodes discovered so far: ";
