@@ -15,8 +15,8 @@ def build(bld):
         'model/tau_sync.cc',
         'model/tau_to_sync.cc',
         'model/trickle_time.cc',
-        
         'model/my_timer.cc',
+        'model/statistics.cc',
         'model/wifi_scanner.cc',
         'model/wifi_receiver.cc',
         'model/duty_cycle_application.cc',
@@ -40,6 +40,7 @@ def build(bld):
         'model/trickle_time.h',
         
         'model/my_timer.h',
+        'model/statistics.h',
         'model/wifi_scanner.h',
         'model/wifi_receiver.h',
         'model/duty_cycle_application.h',

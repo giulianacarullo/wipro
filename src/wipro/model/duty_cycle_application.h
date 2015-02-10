@@ -19,6 +19,7 @@
 //#include "ns3/ipv4-list-routing-helper.h"
 #include "trickle_time.h"
 #include "my_timer.h"
+#include "statistics.h"
 #include "wifi_receiver.h"
 
 using namespace ns3;
@@ -40,7 +41,7 @@ private:
   	my_timer resultsTimer;
   	int interval;
   	bool firstExecution;
-
+  	statistics stats;
   	void doInback();
   	//Managing packets
   	uint32_t packetSize;

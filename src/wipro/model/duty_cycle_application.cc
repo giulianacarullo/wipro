@@ -17,6 +17,7 @@ duty_cycle_application::duty_cycle_application() :
     interPacketInterval = Seconds (1.0);
     tt = trickle_time(true);
     receiver_wifi = wifi_receiver(tt);
+    stats = statistics();
 }
 
 duty_cycle_application::~duty_cycle_application() {
@@ -45,7 +46,7 @@ duty_cycle_application::checkRestartRequired(){
 
 void
 generate_traffic (Ptr<Socket> socket, duty_cycle_application *dca,
-		uint32_t pktCount, Time pktInterval, bool repeat)	{
+		uint32_t pktCount, Time pktInterval, bool netchanged)	{
 
 	  if (pktCount > 0)  {
 		  if(!dca->isScanning()){
@@ -54,10 +55,14 @@ generate_traffic (Ptr<Socket> socket, duty_cycle_application *dca,
 			  ss << socket->GetNode()->GetId();//add number to the stream
 			  //std::string s = "~" + ss.str(); //eventually check for pktSize
 			  std::string s = ss.str();
-			  uint8_t *buffer = (uint8_t*)std::malloc(s.length() + 1);
-			  std::memset(buffer, 0, s.length() + 1);
+			  uint8_t *buffer = (uint8_t*)std::malloc(s.length() + 2);
+			  std::memset(buffer, 0, s.length() + 2);
 			  int offset = 2;
 			  std::memcpy(buffer + offset, s.c_str(), s.length()+1);
+			  if(netchanged)
+				  std::memcpy(buffer + offset+1, "0", sizeof(netchanged));
+			  else
+				  std::memcpy(buffer + offset+1, "1", sizeof(netchanged));
 			  int pktSize = s.length() +1;
 			  //NS_LOG_UNCOND ("Sending packet whose content is: "<< buffer+offset);
 			  Packet *p = new Packet(buffer+offset, pktSize);
@@ -65,9 +70,10 @@ generate_traffic (Ptr<Socket> socket, duty_cycle_application *dca,
 			  //socket->Send (Create<Packet> (pktSize));
 			  socket->Send (p);
 			  Simulator::Schedule (pktInterval, &generate_traffic,
-								   socket, dca, pktCount-1, pktInterval, repeat);
+								   socket, dca, pktCount-1, pktInterval, netchanged);
 		  }
 	    }
+	  /*
 	  else
 		  if(repeat) {
 			  if(!dca->isScanning()){
@@ -79,7 +85,7 @@ generate_traffic (Ptr<Socket> socket, duty_cycle_application *dca,
 		  else {
 			  socket->Close ();
 		  }
-
+	*/
 }
 void
 duty_cycle_application::flipScanning(){
@@ -93,18 +99,26 @@ duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 	Ptr< Packet > pp = r_socket->Recv();
 	unsigned char *data = new unsigned char(pp->GetSize());
 	pp->CopyData (data, pp->GetSize());
-	std::string s(data, data+pp->GetSize() );
+	std::string s(data, data+pp->GetSize());
+	std::string ssid = s.substr(0, s.size()-1);
+	std::string netchanged = s.substr(s.size()-1, s.size());
+	if(netchanged=="1")
+		tt.netChanged();
 	if(scanning){
-		receiver_wifi.add_SSID(s);
+		receiver_wifi.add_SSID(ssid);
 		NS_LOG_UNCOND("DCAA - Node "<<GetNode()->GetId() << " recognized: ");
 		receiver_wifi.printResults();
 		checkRestartRequired();
 	}
 	else {//IDEA: add statistics on dropped packets! (including end peers but dropped (bad) or old peer dropped (good)
-		if(receiver_wifi.contains(s))
+		if(receiver_wifi.contains(ssid)){
+			stats.addDroppedKnownPacket(ssid);
 			NS_LOG_UNCOND(GetNode()->GetId()<<" Dropped packet cause of scanning - already known");
-		else
+		}
+		else{
+			stats.addDroppedUnknownPacket(ssid);
 			NS_LOG_UNCOND(GetNode()->GetId()<<" Dropped packet cause of scanning - not known");
+		}
 	}
 }
 	
@@ -181,7 +195,7 @@ duty_cycle_application::doInback() {
 	        if(tt.shouldIBroadcast()){
 	        	//NS_LOG_UNCOND("Should I broadcast!");
 	        	numPackets = 2; //sending 4 packets, one for every second
-	        	Simulator::ScheduleNow(&generate_traffic, m_socket,this, numPackets, interPacketInterval, false);
+	        	Simulator::ScheduleNow(&generate_traffic, m_socket,this, numPackets, interPacketInterval, tt.isNetChanged());
 	         }
 				////////////////////OLD code
 				//tt = tt.getCurrentTrickleTime();
@@ -223,6 +237,7 @@ duty_cycle_application::doInback() {
 void
 duty_cycle_application::StartApplication(){
 	Simulator::Schedule(Seconds(m_delay), &duty_cycle_application::doInback, this);
+	//Simulator::Schedule(Seconds (90.0), &duty_cycle_application::StopApplication,this);
 }
 
 void
@@ -231,5 +246,5 @@ duty_cycle_application::setDelay(unsigned int val){
 }
 void
 duty_cycle_application::StopApplication () {
-
+	stats.printDropped(GetNode()->GetId());
 }

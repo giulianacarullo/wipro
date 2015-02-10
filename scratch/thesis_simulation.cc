@@ -126,7 +126,7 @@ int main (int argc, char *argv[])
   double distance = 50;  // m my_comment: the distance is the actual distance between each couple of nodes
   uint32_t packetSize = 1000; // bytes
   uint32_t numPackets = 1;
-  uint32_t numNodes = 3;  // by default, 5x5
+  uint32_t numNodes = 10;  // by default, 5x5
   uint32_t sinkNode = 0;
   uint32_t sourceNode = 24;
   double interval = 1.0; // seconds
@@ -307,9 +307,11 @@ int main (int argc, char *argv[])
   //NS_LOG_UNCOND ("Testing broadcast from node " << sourceNode << " with grid distance " << distance);
 
   apps.Start(Seconds(0));
+  apps.Stop(Seconds (9.8));
   //for(int i = 0; i<5; i++)
   //	  Simulator::Schedule(Seconds(i), &PrintNodesPosition, c);
-  Simulator::Stop (Seconds (60.0));
+
+  Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
   Simulator::Destroy ();
 
