@@ -10,8 +10,8 @@
 
 statistics::statistics() {
 	// TODO Auto-generated constructor stub
-	dropped_known_packets = std::map<std::string, int>();
-	dropped_unknown_packets = std::map<std::string, int>();
+	dropped_known_packets = std::map<int, int>();
+	dropped_unknown_packets = std::map<int, int>();
 }
 
 statistics::~statistics() {
@@ -19,15 +19,19 @@ statistics::~statistics() {
 }
 void
 statistics::addDroppedKnownPacket(std::string ssid){
-	if(dropped_known_packets.count(ssid)==0)
-		dropped_known_packets[ssid]=0; //init
-	else
-		//dropped_known_packets[ssid] ++;
-		dropped_known_packets[ssid] = dropped_known_packets[ssid] ++;
+	int id = atoi(ssid.c_str());
+	//if(dropped_known_packets.count(id)==0)
+	//	dropped_known_packets[id]=0; //init
+	//else
+		dropped_known_packets[id] ++;
+	//	dropped_known_packets[id] +=1;
+		//dropped_known_packets[ssid] = dropped_known_packets[ssid] ++;
 	//dropped_known_packets.insert();
 }
 void
 statistics::addDroppedUnknownPacket(std::string ssid){
+	NS_LOG_UNCOND("SIZE "<<dropped_unknown_packets.size());
+	/*
 	if(dropped_unknown_packets.count(ssid)==0) {
 			NS_LOG_UNCOND("first unknown");
 			dropped_unknown_packets[ssid]=0; //init
@@ -35,11 +39,15 @@ statistics::addDroppedUnknownPacket(std::string ssid){
 	else{
 		NS_LOG_UNCOND("adding unknown");
 		dropped_unknown_packets[ssid] ++;
-	}
+		dropped_unknown_packets[ssid] += 1;
+	}*/
+	int id = atoi(ssid.c_str());
+	dropped_unknown_packets[id] ++;
 }
 
 void
 statistics::printDropped(){
+	/*
 	std::string drop= "Dropped known:\n";
 	std::stringstream convert; // stringstream used for the conversion
 
@@ -58,20 +66,26 @@ statistics::printDropped(){
 			drop = drop + iter->first + " - " + convert.str()  + "; " ;
 		}
 		NS_LOG_UNCOND("STATS - "<< drop<<"\n");
+		*/
 }
 void
-statistics::printDropped(uint32_t id){
+statistics::printDropped(int id){
 		std::stringstream convert_id; // stringstream used for the conversion
 		convert_id << id;
-		std::map<std::string, int>::iterator it = dropped_known_packets.find(convert_id.str());
-		//(it != dropped_known_packets.end())
-		std::string drop= "Node "+ convert_id.str() + " - dropped known: ";
-		std::stringstream convert;
-		convert << it->second;
-		drop = drop + convert.str() + " dropped unknown: " ;
-		//it = dropped_unknown_packets.find(convert.str());
-		std::stringstream convert_uk;
-		convert_uk << it->second;
-		drop = drop + convert_uk.str() + "; " ;
-		NS_LOG_UNCOND("STATS - "<< drop<<"\n");
+		std::string ssid = convert_id.str();
+		//NS_LOG_UNCOND("SIZE"<< dropped_known_packets.size() << " - "<< dropped_known_packets.count(ssid));
+		std::map<int, int>::iterator it = dropped_known_packets.find(id);
+		if(it != dropped_known_packets.end()){
+			std::string drop= "Node "+ convert_id.str() + " - dropped known: ";
+			std::stringstream convert;
+			convert << it->second;
+			drop = drop + convert.str() + " dropped unknown: " ;
+			//it = dropped_unknown_packets.find(convert.str());
+			std::stringstream convert_uk;
+			convert_uk << it->second;
+			drop = drop + convert_uk.str() + "; " ;
+			NS_LOG_UNCOND("STATS - "<< drop<<"\n");
+		}
+		else
+		NS_LOG_UNCOND("DOH THE PROBLEM IS HERE");
 }
