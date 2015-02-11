@@ -106,18 +106,18 @@ duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 		tt.netChanged();
 	if(scanning){
 		receiver_wifi.add_SSID(ssid);
-		NS_LOG_UNCOND("DCAA - Node "<<GetNode()->GetId() << " recognized: ");
-		receiver_wifi.printResults();
+		stats.removeIfDropped(ssid);
 		checkRestartRequired();
 	}
-	else {//IDEA: add statistics on dropped packets! (including end peers but dropped (bad) or old peer dropped (good)
+	else {
+		//Adding statistics on dropped packets! (including end peers but dropped (bad) or old peer dropped (good)
 		if(receiver_wifi.contains(ssid)){
 			stats.addDroppedKnownPacket();
-			NS_LOG_UNCOND(GetNode()->GetId()<<" Dropped packet cause of scanning - already known");
+			//NS_LOG_DEBUG(GetNode()->GetId()<<" Dropped packet cause of scanning - already known");
 		}
 		else{
-			stats.addDroppedUnknownPacket();
-			NS_LOG_UNCOND(GetNode()->GetId()<<" Dropped packet cause of scanning - not known");
+			stats.addDroppedUnknownPacket(ssid);
+			//NS_LOG_DEBUG(GetNode()->GetId()<<" Dropped packet cause of scanning - not known");
 		}
 	}
 }
@@ -185,7 +185,7 @@ duty_cycle_application::doInback() {
 	         int rate = 1;
 	         interval = tt.getIntervalLength();
 	         //int rate = (onlyListeningTime>6)?6:onlyListeningTime;//min between 6000 and onlyListeningTime
-	         NS_LOG_UNCOND(GetNode( )->GetId()<<" - Interval size: "<< interval <<" scanning for "<<onlyListeningTime <<" seconds");
+	         //NS_LOG_UNCOND(GetNode( )->GetId()<<" - Interval size: "<< interval <<" scanning for "<<onlyListeningTime <<" seconds");
 	         //Flipping scanning after rate seconds, which means we are entering the scan state
 	         Simulator::Schedule(Seconds(rate), &duty_cycle_application::flipScanning,this);
 	         // exiting the scan state after onlyLusteningTime
@@ -246,5 +246,7 @@ duty_cycle_application::setDelay(unsigned int val){
 }
 void
 duty_cycle_application::StopApplication () {
+	NS_LOG_UNCOND("Node "<<GetNode()->GetId() << " recognized: ");
+	receiver_wifi.printResults();
 	stats.printDropped(GetNode()->GetId());
 }
