@@ -55,7 +55,8 @@ statistics::removeIfDropped(std::string ssid){
 		//storing the delay between first receive and current time.
 		//computing the single peer discovery time.
 		Time now = Simulator::Now();
-		Time delay = Time(now.GetMilliSeconds() - dropped_times[ssid].GetMilliSeconds());
+		//Time delay = Time(now.GetMilliSeconds() - dropped_times[ssid].GetMilliSeconds());
+		Time delay = Time::FromDouble(now.GetMilliSeconds() - dropped_times[ssid].GetMilliSeconds(), Time::MS);
 		dropped_but_recognized[ssid] = delay;
 	}
 	//else manage undropped packets PROBABLY THERE IS A BUG!
@@ -77,7 +78,7 @@ statistics::printDropped(){
 		drop = drop + convert.str() + " dropped unknown: " ;
 		std::stringstream convert_uk;
 		convert_uk << dukp;
-		drop = drop + convert_uk.str() + " - not discovered peer: " ;
+		drop = drop + convert_uk.str() + " - not discovered peer cause dropped: " ;
 		std::stringstream convert_not_recognized;
 		convert_not_recognized << dropped.size();
 		drop = drop + convert_not_recognized.str() + " - dropped but recognized:  " ;
@@ -85,7 +86,7 @@ statistics::printDropped(){
 		std::stringstream convert_drop_rec;
 		convert_drop_rec << dropped_but_recognized.size();
 				drop = drop + convert_drop_rec.str() + "; " ;
-		NS_LOG_UNCOND("STATS - "<< drop<<"\n");
+		NS_LOG_UNCOND("STATS - "<< drop);
 		printSinglePeerDiscoveryTime();
 }
 

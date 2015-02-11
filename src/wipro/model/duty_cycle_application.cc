@@ -248,7 +248,7 @@ duty_cycle_application::setDelay(unsigned int val){
 }
 void
 duty_cycle_application::StopApplication () {
-	NS_LOG_UNCOND("Node "<<GetNode()->GetId() << " recognized: ");
+	NS_LOG_UNCOND("\nNode "<<GetNode()->GetId() << " recognized: ");
 	receiver_wifi.printResults();
 	stats.printDropped();
 }
