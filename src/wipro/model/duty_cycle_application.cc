@@ -17,7 +17,6 @@ duty_cycle_application::duty_cycle_application() :
     interPacketInterval = Seconds (1.0);
     tt = trickle_time(true);
     receiver_wifi = wifi_receiver(tt);
-    stats = statistics();
 }
 
 duty_cycle_application::~duty_cycle_application() {
@@ -94,8 +93,6 @@ duty_cycle_application::flipScanning(){
 }
 void
 duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
-	//just to try until complete code is produced... remove the following line
-	//scanning = true;
 	Ptr< Packet > pp = r_socket->Recv();
 	unsigned char *data = new unsigned char(pp->GetSize());
 	pp->CopyData (data, pp->GetSize());
@@ -105,6 +102,8 @@ duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 	if(netchanged=="1")
 		tt.netChanged();
 	if(scanning){
+		//if(GetNode()->GetId() == 5)
+		//	NS_LOG_UNCOND(GetNode()->GetId()<<" recognized a new peer: "<< ssid);
 		receiver_wifi.add_SSID(ssid);
 		stats.removeIfDropped(ssid);
 		checkRestartRequired();
@@ -117,6 +116,8 @@ duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 		}
 		else{
 			stats.addDroppedUnknownPacket(ssid);
+			//if(GetNode()->GetId() == 5)
+			//	NS_LOG_UNCOND(GetNode()->GetId()<<" Dropped packet " << ssid <<" cause of scanning - not known");
 			//NS_LOG_DEBUG(GetNode()->GetId()<<" Dropped packet cause of scanning - not known");
 		}
 	}
@@ -236,6 +237,7 @@ duty_cycle_application::doInback() {
 
 void
 duty_cycle_application::StartApplication(){
+	stats = statistics(GetNode()->GetId());
 	Simulator::Schedule(Seconds(m_delay), &duty_cycle_application::doInback, this);
 	//Simulator::Schedule(Seconds (90.0), &duty_cycle_application::StopApplication,this);
 }
@@ -248,5 +250,5 @@ void
 duty_cycle_application::StopApplication () {
 	NS_LOG_UNCOND("Node "<<GetNode()->GetId() << " recognized: ");
 	receiver_wifi.printResults();
-	stats.printDropped(GetNode()->GetId());
+	stats.printDropped();
 }

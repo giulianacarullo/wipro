@@ -24,6 +24,7 @@ wifi_receiver::wifi_receiver(trickle_time t){
 	//this.map = new HashMap<String, ScanResult>();
 	//this.potentiallyLeft = new HashMap<String, ScanResult>();
 	mappina = std::map<std::string,std::string>();
+	settino = std::set<std::string> ();
 	tt = t;
 }
 
@@ -73,11 +74,11 @@ wifi_receiver::contains(std::string SSID){
 		return false;
 	return true;
 }
+
 void
 wifi_receiver::printResults(){
 	//std::cout << "Nodes discovered so far: ";
 	std::string discovered = "";
-
 	//for(std::map<std::string,std::string>::iterator iter = mappina.begin(); iter != mappina.end(); ++iter)
 	for(std::set<std::string>::iterator iter = settino.begin(); iter != settino.end(); ++iter)
 	{

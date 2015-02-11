@@ -18,11 +18,13 @@ class statistics {
 private:
 	//those variable stores the number of peers
 	//immediately recognized as soon as the become available
-	int undropped;
+	//int undropped;
+	int id;
 	int dkp;
 	int dukp;
 	//probably redundant
 	std::set<std::string> dropped;
+	std::map<std::string, Time> dropped_times;
 	//initially it contains the first time the packet is
 	//dropped. Then, when a node is recognized for the first time (update done in removeIfDropped()),
 	//it contains the delay until discovery (single peer discovery time)
@@ -30,6 +32,7 @@ private:
 
 public:
 	statistics();
+	statistics(int id);
 	virtual ~statistics();
 
 	/*
@@ -51,12 +54,15 @@ public:
 	* droppedUnknown packets, since even a packet is dropped, a peer
 	* may be able to recognize that peer later on
 	*/
-	void printDropped(int id);
+	void printDropped();
 
 	/*
 	 * This method needs to be called when a new peer is discovered
 	 */
 	void removeIfDropped(std::string ssid);
+	//not printed nodes are supposed to be 0 (or not discovered)
+	void printSinglePeerDiscoveryTime();
+
 };
 
 
