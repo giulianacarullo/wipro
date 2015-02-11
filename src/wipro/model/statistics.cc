@@ -16,10 +16,13 @@ statistics::statistics() {
 	dropped_but_recognized = std::map<std::string, Time>();
 }
 
-statistics::statistics(int id_peer) {
+statistics::statistics(int id_peer, int numNodes, int simLen) {
 	id = id_peer;
+	num_nodes = numNodes;
+	sim_len = simLen;
 	dkp = 0;
 	dukp = 0;
+	recognized = 0;
 	//undropped = 0;
 	dropped = std::set<std::string>();
 	dropped_times = std::map<std::string, Time>();
@@ -44,7 +47,10 @@ statistics::addDroppedUnknownPacket(std::string ssid){
 		//dropped_but_recognized[ssid]= Simulator::Now();
 	}
 }
-
+void
+statistics::addRecognized(){
+	recognized++;
+}
 void
 statistics::removeIfDropped(std::string ssid){
 	if(dropped.count(ssid) != 0){
@@ -94,5 +100,31 @@ void
 statistics::printSinglePeerDiscoveryTime(){
 	NS_LOG_UNCOND("STATS - Single Peer Discovery Time for node "<<id);
 	for (std::map<std::string, Time>::iterator it=dropped_but_recognized.begin(); it!=dropped_but_recognized.end(); ++it)
-	    NS_LOG_UNCOND (it->first << " => " << it->second.GetMilliSeconds());
+		NS_LOG_UNCOND (it->first << " => " << it->second.GetSeconds());
+		//NS_LOG_UNCOND (it->first << " => " << it->second.GetMilliSeconds());
+}
+
+void
+statistics::saveDroppedVaryingNodes(){
+	  std::stringstream convert; // stringstream used for the conversion
+	  convert << num_nodes;
+	  std::string nn = convert.str();
+
+      //FILE *file;
+	  std::ofstream outfile;
+	  std::string filename("./src/wipro/results/base_protocol/nodes/20seconds_sim/"+nn+"nodes.txt");
+	  //outfile.open(filename.c_str(), std::ios::out);
+
+	  //outfile.open(filename.c_str(), std::ios_base::app);
+	  outfile.open(filename.c_str(), std::ios::app);
+
+	  //std::ios::app
+	  // id, #total recognized #not recognized cause dropped # dropped recognized #rec immediately
+	  outfile << id<< " "<<recognized<<" "<<dropped.size()<<" "<<dropped_but_recognized.size()<<" "<<recognized-dropped_but_recognized.size()<<"\n";
+	  outfile.close();
+}
+
+void
+saveTimings(){
+
 }

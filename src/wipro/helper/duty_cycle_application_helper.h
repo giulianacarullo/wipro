@@ -21,12 +21,15 @@ class duty_cycle_application_helper {
 		  Address m_remote;
 		  RandomVariable m_packetSize;
 		  RandomVariable m_delay;
+		  int num_nodes;
+		  int sim_len;
 		  //ObjectFactory m_factory;
 	public:
 		duty_cycle_application_helper();
 		duty_cycle_application_helper(std::string protocol);
 		virtual ~duty_cycle_application_helper();
 		ApplicationContainer Install (NodeContainer nodes);
+		void setDataForStats(int numNodes, int simLen);
 };
  /* namespace ns3 */
 

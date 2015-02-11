@@ -10,6 +10,8 @@
 
 #include "ns3/core-module.h"
 #include <stdlib.h>
+#include <iostream>
+#include <fstream>
 #include <string>
 
 using namespace ns3;
@@ -22,6 +24,9 @@ private:
 	int id;
 	int dkp;
 	int dukp;
+	int recognized;
+	int num_nodes;
+	int sim_len;
 	//probably redundant
 	std::set<std::string> dropped;
 	std::map<std::string, Time> dropped_times;
@@ -32,7 +37,7 @@ private:
 
 public:
 	statistics();
-	statistics(int id);
+	statistics(int id, int numNodes, int simLen);
 	virtual ~statistics();
 
 	/*
@@ -45,7 +50,7 @@ public:
 	 * during the whole execution
 	 */
 	void addDroppedUnknownPacket(std::string ssid);
-
+	void addRecognized();
 	/*
 	* Print the total number of already known peers dropped
 	* during the whole execution, plus those unknown during the execution.
@@ -62,6 +67,7 @@ public:
 	void removeIfDropped(std::string ssid);
 	//not printed nodes are supposed to be 0 (or not discovered)
 	void printSinglePeerDiscoveryTime();
+	void saveDroppedVaryingNodes();
 
 };
 

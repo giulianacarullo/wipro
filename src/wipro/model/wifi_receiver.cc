@@ -28,7 +28,7 @@ wifi_receiver::wifi_receiver(trickle_time t){
 	tt = t;
 }
 
-void
+bool
 wifi_receiver::add_SSID(std::string SSID){
      //Considering only near peers
      //if(SSID_formatter::checkFormat(SSID)) { //no need for checkformat! it is just a simulation!
@@ -37,8 +37,11 @@ wifi_receiver::add_SSID(std::string SSID){
     	 //std::string printable = SSID_formatter::printableSSID(SSID);
 	     //std::string printable = SSID;
 	    //mappina.insert(std::pair<std::string,std::string>(SSID,SSID) );
-		if(settino.count(SSID) == 0)
+		bool new_insert = false;
+		if(settino.count(SSID) == 0){
+			new_insert = true;
 			settino.insert(SSID);
+		}
     	 //mappina[SSID] = SSID;
     	 //std::cout<<"WR "<< SSID <<" - " << printable <<" azz "<<std::endl;
     	 //	if(potentiallyLeft.containsKey(printable))
@@ -46,12 +49,10 @@ wifi_receiver::add_SSID(std::string SSID){
     	 //it is a peer, must check if it changed or not
     	 tt = tt.getCurrentTrickleTime();
          if(!SSID_formatter::netChanged(SSID)) {
-        	 	 //NS_LOG_UNCOND("WR - FOUND again a peer " <<SSID);
           		tt.sameMetadata();
          }
          else {
           		tt.netChanged();
-          		//NS_LOG_UNCOND("WR - FOUND a new peer: " << SSID);
          }
 
      //}
@@ -67,6 +68,7 @@ wifi_receiver::add_SSID(std::string SSID){
             	            		potentiallyLeft.put(SSID, net);
             	            	}
             	 }*/
+         return new_insert;
         }
 bool
 wifi_receiver::contains(std::string SSID){

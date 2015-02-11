@@ -126,7 +126,7 @@ int main (int argc, char *argv[])
   double distance = 50;  // m my_comment: the distance is the actual distance between each couple of nodes
   uint32_t packetSize = 1000; // bytes
   uint32_t numPackets = 1;
-  uint32_t numNodes = 10;  // by default, 5x5
+  uint32_t numNodes = 4;  // by default, 5x5
   uint32_t sinkNode = 0;
   uint32_t sourceNode = 24;
   double interval = 1.0; // seconds
@@ -209,7 +209,9 @@ int main (int argc, char *argv[])
    mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
                               "Mode", StringValue ("Time"),
                               "Time", StringValue ("2s"),
-                              "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=1]"),
+                              //"Speed", StringValue ("ns3::ConstantRandomVariable[Constant=1]"),
+                              "Speed", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=5.0]"),
+                              //"Distance", StringValue("10"),
                               "Bounds", StringValue ("0|200|0|200"));
   /*
    *
@@ -302,16 +304,17 @@ int main (int argc, char *argv[])
 
   //duty_cycle_application_helper app =
   duty_cycle_application_helper app= duty_cycle_application_helper ("ns3::UdpSocketFactory");
+  app.setDataForStats(numNodes, 20);
  ApplicationContainer apps = app.Install(c);
   // Output what we are doing
   //NS_LOG_UNCOND ("Testing broadcast from node " << sourceNode << " with grid distance " << distance);
 
   apps.Start(Seconds(0));
-  apps.Stop(Seconds (9.8));
+  apps.Stop(Seconds (19.99));
   //for(int i = 0; i<5; i++)
   //	  Simulator::Schedule(Seconds(i), &PrintNodesPosition, c);
 
-  Simulator::Stop (Seconds (10.0));
+  Simulator::Stop (Seconds (20.0));
   Simulator::Run ();
   Simulator::Destroy ();
 

@@ -7,10 +7,12 @@
 
 #include "duty_cycle_application.h"
 
-duty_cycle_application::duty_cycle_application() :
+duty_cycle_application::duty_cycle_application(int numNodes, int simLen) :
     beaconBroadcast(Ipv4Address("255.255.255.255"), 80),
     local(Ipv4Address::GetAny (), 80) {
 	firstExecution = true;
+	num_nodes = numNodes;
+	sim_len = simLen;
 	scanning = false;
 	packetSize = 1000; // bytes
 	numPackets = 1;
@@ -104,7 +106,8 @@ duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 	if(scanning){
 		//if(GetNode()->GetId() == 5)
 		//	NS_LOG_UNCOND(GetNode()->GetId()<<" recognized a new peer: "<< ssid);
-		receiver_wifi.add_SSID(ssid);
+		if(receiver_wifi.add_SSID(ssid))
+			stats.addRecognized();
 		stats.removeIfDropped(ssid);
 		checkRestartRequired();
 	}
@@ -195,7 +198,7 @@ duty_cycle_application::doInback() {
 	        //tt = tt.getCurrentTrickleTime();
 	        if(tt.shouldIBroadcast()){
 	        	//NS_LOG_UNCOND("Should I broadcast!");
-	        	numPackets = 2; //sending 4 packets, one for every second
+	        	numPackets = 3; //sending 4 packets, one for every second
 	        	Simulator::ScheduleNow(&generate_traffic, m_socket,this, numPackets, interPacketInterval, tt.isNetChanged());
 	         }
 				////////////////////OLD code
@@ -237,7 +240,7 @@ duty_cycle_application::doInback() {
 
 void
 duty_cycle_application::StartApplication(){
-	stats = statistics(GetNode()->GetId());
+	stats = statistics(GetNode()->GetId(), num_nodes, sim_len);
 	Simulator::Schedule(Seconds(m_delay), &duty_cycle_application::doInback, this);
 	//Simulator::Schedule(Seconds (90.0), &duty_cycle_application::StopApplication,this);
 }
@@ -248,7 +251,8 @@ duty_cycle_application::setDelay(unsigned int val){
 }
 void
 duty_cycle_application::StopApplication () {
-	NS_LOG_UNCOND("\nNode "<<GetNode()->GetId() << " recognized: ");
-	receiver_wifi.printResults();
+	//NS_LOG_UNCOND("\nNode "<<GetNode()->GetId() << " recognized: ");
+	//receiver_wifi.printResults();
 	stats.printDropped();
+	stats.saveDroppedVaryingNodes();
 }

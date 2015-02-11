@@ -27,7 +27,7 @@ duty_cycle_application_helper::Install (NodeContainer nodes){
 	    ApplicationContainer applications;
 	    Ptr<UniformRandomVariable> rv = CreateObject<UniformRandomVariable> ();
 	    for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i) {
-	        Ptr<duty_cycle_application> app = CreateObject<duty_cycle_application> ();
+	        Ptr<duty_cycle_application> app = CreateObject<duty_cycle_application> (num_nodes, sim_len);
 	        //app->SetSize (m_packetSize);
 	        //app->SetDelay (m_delay);
 	       // std::cout<<"Here\n";
@@ -39,6 +39,11 @@ duty_cycle_application_helper::Install (NodeContainer nodes){
 	        applications.Add (app);
 	      }
 	    return applications;
+}
+void
+duty_cycle_application_helper::setDataForStats(int numNodes, int simLen){
+	num_nodes = numNodes;
+	sim_len = simLen;
 }
 	  /*
 	  void

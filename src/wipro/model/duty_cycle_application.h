@@ -47,6 +47,8 @@ private:
   	uint32_t packetSize;
   	uint32_t numPackets;
   	Time interPacketInterval;
+  	int num_nodes;
+  	int sim_len;
   virtual void StartApplication (void);
   virtual void StopApplication (void);
   void flipScanning();
@@ -56,7 +58,7 @@ private:
 
 
 public:
-  duty_cycle_application();
+  duty_cycle_application(int numNodes,int simLen);
 	  //InetSocketAddress beaconBroadcast = InetSocketAddress(Ipv4Address("255.255.255.255"), 80);
 	  //duty_cycle_application::local = InetSocketAddress (Ipv4Address::GetAny (), 80);
 
