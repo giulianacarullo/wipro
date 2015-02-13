@@ -22,8 +22,9 @@ statistics::statistics(int id_peer, int numNodes, int simLen) {
 	sim_len = simLen;
 	dkp = 0;
 	dukp = 0;
-	recognized = 0;
+	//recognized = 0;
 	//undropped = 0;
+	recognized = std::set<std::string>();
 	dropped = std::set<std::string>();
 	dropped_times = std::map<std::string, Time>();
 	dropped_but_recognized = std::map<std::string, Time>();
@@ -48,8 +49,9 @@ statistics::addDroppedUnknownPacket(std::string ssid){
 	}
 }
 void
-statistics::addRecognized(){
-	recognized++;
+statistics::addRecognized(std::string ssid){
+	if(recognized.count(ssid)==0)
+		recognized.insert(ssid);
 }
 void
 statistics::removeIfDropped(std::string ssid){
@@ -120,11 +122,58 @@ statistics::saveDroppedVaryingNodes(){
 
 	  //std::ios::app
 	  // id, #total recognized #not recognized cause dropped # dropped recognized #rec immediately
-	  outfile << id<< " "<<recognized<<" "<<dropped.size()<<" "<<dropped_but_recognized.size()<<" "<<recognized-dropped_but_recognized.size()<<"\n";
+	  outfile << id<< " "<<recognized.size()<<" "<<dropped.size()<<" "<<dropped_but_recognized.size()<<" "<<recognized.size()-dropped_but_recognized.size()<<"\n";
 	  outfile.close();
 }
 
+//values on the main diagonal should be ignored
 void
-saveTimings(){
+statistics::saveTimings(){
+	 	  std::stringstream convert; // stringstream used for the conversion
+		  convert << num_nodes;
+		  std::string nn = convert.str();
 
+	      //FILE *file;
+		  std::ofstream outfile;
+		  std::string filename("./src/wipro/results/base_protocol/nodes/20seconds_sim/"+nn+"nodes_timing.txt");
+		  //outfile.open(filename.c_str(), std::ios::out);
+
+		  //outfile.open(filename.c_str(), std::ios_base::app);
+		  outfile.open(filename.c_str(), std::ios::app);
+
+		  //std::ios::app
+		  // id, #total recognized #not recognized cause dropped # dropped recognized #rec immediately
+		  std::stringstream ss;//create a stringstream
+		  //ss << i;
+		  outfile << id <<" ";
+		  for (int i = 0; i < num_nodes; i++){
+			  ss << i;
+			  std::string ssid = ss.str();
+			  std::map<std::string, Time>::iterator it= dropped_but_recognized.find(ssid);
+			  //If it has not ben dropped but recognized
+			  if(it == dropped_but_recognized.end()){
+				  //and it is not even ever dropped
+				  if(dropped.count(ssid) != 0){
+					  outfile << "-1" << " "; // -1 not found cause dropped
+				  }
+				  else {
+					  //and not immediately recognized
+					  if(recognized.count(ssid) !=0)
+						  outfile << "0" << " "; // 0 for immediately discovered
+					  //it means that the peer has been not found at all
+					  else // -2 for not found at all
+						  outfile << "-2" << " ";
+				  }
+			  }
+			  else { // storing dropped node's timing
+				  outfile << it->second.GetSeconds() << " ";
+			  }
+			  ss.str("");
+			  ss.clear();
+			  if(i == num_nodes-1)
+				  outfile<<"\n";
+
+		  }
+		  //outfile << id<< " "<<recognized<<" "<<dropped.size()<<" "<<dropped_but_recognized.size()<<" "<<recognized-dropped_but_recognized.size()<<"\n";
+		  outfile.close();
 }

@@ -24,11 +24,12 @@ private:
 	int id;
 	int dkp;
 	int dukp;
-	int recognized;
+	//int recognized;
 	int num_nodes;
 	int sim_len;
 	//probably redundant
 	std::set<std::string> dropped;
+	std::set<std::string> recognized;
 	std::map<std::string, Time> dropped_times;
 	//initially it contains the first time the packet is
 	//dropped. Then, when a node is recognized for the first time (update done in removeIfDropped()),
@@ -50,7 +51,7 @@ public:
 	 * during the whole execution
 	 */
 	void addDroppedUnknownPacket(std::string ssid);
-	void addRecognized();
+	void addRecognized(std::string ssid);
 	/*
 	* Print the total number of already known peers dropped
 	* during the whole execution, plus those unknown during the execution.
@@ -68,6 +69,7 @@ public:
 	//not printed nodes are supposed to be 0 (or not discovered)
 	void printSinglePeerDiscoveryTime();
 	void saveDroppedVaryingNodes();
+	void saveTimings();
 
 };
 

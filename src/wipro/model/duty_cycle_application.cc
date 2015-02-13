@@ -107,7 +107,7 @@ duty_cycle_application::HandleMessage (Ptr<Socket> r_socket) {
 		//if(GetNode()->GetId() == 5)
 		//	NS_LOG_UNCOND(GetNode()->GetId()<<" recognized a new peer: "<< ssid);
 		if(receiver_wifi.add_SSID(ssid))
-			stats.addRecognized();
+			stats.addRecognized(ssid);
 		stats.removeIfDropped(ssid);
 		checkRestartRequired();
 	}
@@ -241,6 +241,7 @@ duty_cycle_application::doInback() {
 void
 duty_cycle_application::StartApplication(){
 	stats = statistics(GetNode()->GetId(), num_nodes, sim_len);
+
 	Simulator::Schedule(Seconds(m_delay), &duty_cycle_application::doInback, this);
 	//Simulator::Schedule(Seconds (90.0), &duty_cycle_application::StopApplication,this);
 }
@@ -252,7 +253,8 @@ duty_cycle_application::setDelay(unsigned int val){
 void
 duty_cycle_application::StopApplication () {
 	//NS_LOG_UNCOND("\nNode "<<GetNode()->GetId() << " recognized: ");
-	//receiver_wifi.printResults();
+	receiver_wifi.printResults();
 	stats.printDropped();
 	stats.saveDroppedVaryingNodes();
+	stats.saveTimings();
 }
