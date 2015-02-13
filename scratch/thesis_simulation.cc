@@ -126,9 +126,10 @@ int main (int argc, char *argv[])
   double distance = 50;  // m my_comment: the distance is the actual distance between each couple of nodes
   uint32_t packetSize = 1000; // bytes
   uint32_t numPackets = 1;
-  uint32_t numNodes = 4;  // by default, 5x5
+  uint32_t numNodes = 8;  // by default, 5x5
   uint32_t sinkNode = 0;
   uint32_t sourceNode = 24;
+  double sim_len = 20.0;
   double interval = 1.0; // seconds
   bool verbose = false;
   bool tracing = false;
@@ -145,6 +146,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("numNodes", "number of nodes", numNodes);
   cmd.AddValue ("sinkNode", "Receiver node number", sinkNode);
   cmd.AddValue ("sourceNode", "Sender node number", sourceNode);
+  cmd.AddValue ("simLen", "simulation length", sim_len);
 
   cmd.Parse (argc, argv);
   // Convert to time object
@@ -310,11 +312,11 @@ int main (int argc, char *argv[])
   //NS_LOG_UNCOND ("Testing broadcast from node " << sourceNode << " with grid distance " << distance);
 
   apps.Start(Seconds(0));
-  apps.Stop(Seconds (19.99));
+  apps.Stop(Seconds (sim_len-0.1));
   //for(int i = 0; i<5; i++)
   //	  Simulator::Schedule(Seconds(i), &PrintNodesPosition, c);
 
-  Simulator::Stop (Seconds (20.0));
+  Simulator::Stop (Seconds (sim_len));
   Simulator::Run ();
   Simulator::Destroy ();
 
