@@ -122,7 +122,7 @@ statistics::saveDroppedVaryingNodes(){
 
 	  //std::ios::app
 	  // id, #total recognized #not recognized cause dropped # dropped recognized #rec immediately
-	  outfile << id<< " "<<recognized.size()<<" "<<dropped.size()<<" "<<dropped_but_recognized.size()<<" "<<recognized.size()-dropped_but_recognized.size()<<"\n";
+	  outfile << id<< " "<<recognized.size()<<" "<<dropped.size()<<" "<<dropped_but_recognized.size()<<" "<<recognized.size()-dropped_but_recognized.size()<<" "<<dkp<<" "<<dukp<<"\n";
 	  outfile.close();
 }
 
